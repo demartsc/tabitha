@@ -1,16 +1,18 @@
-import React from 'react';
+import React, {Component} from 'react';
 
-class InputTableau extends React.Component {
+class InputTableau extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      vizInput: 'Input your viz URL here'
+      vizInput: 'https://public.tableau.com/views/PhaseoftheMoon/MoonPhase?:embed=y&:display_count=yes'
     };
 
     this.handleInputChange = this.handleInputChange.bind(this);
   }
 
   handleInputChange(event) {
+    console.log(event);
+
     const target = event.target;
     const value = target.value;
     const name = target.name;
@@ -24,16 +26,21 @@ class InputTableau extends React.Component {
     console.log(this);
     
     return (
-      <form>
-        <label>
-          Input Tableau Public URL:
+      <div className='tabithaRootDiv'>
+        <form>
           <input
+            placeholder="Input Tableau Public URL"
             name="vizInput"
             type="text"
             value={this.state.numberOfGuests}
-            onChange={this.handleInputChange} />
-        </label>
-      </form>
+            onChange={this.handleInputChange}
+            style= {{width: '70%'}} />
+          <button
+            onClick={this.handleInputChange} >
+            <span> Go </span> 
+          </button>
+        </form>
+      </div>
     );
   }
 }

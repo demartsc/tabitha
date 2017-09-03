@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import centerComponent from 'react-center-component';
@@ -14,10 +14,9 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h2>Welcome to Tabitha</h2>
         </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-        <InputTableau />
+        <br />
+        <InputTableau className="App-input" />
+        <br />
         <SimpleReport />
       </div>
     );
