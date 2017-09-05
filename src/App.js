@@ -3,11 +3,10 @@ import logo from './logo.svg';
 import './App.css';
 import centerComponent from 'react-center-component';
 import InputTableau from './inputTableauForm.js'
-import SimpleReport from './tableauViz.js'
 
 class App extends Component {
   render() {
-    console.log (this);
+    //console.log (this);
     return (
       <div className="App">
         <div className="App-header">
@@ -16,8 +15,6 @@ class App extends Component {
         </div>
         <br />
         <InputTableau className="App-input" />
-        <br />
-        <SimpleReport />
       </div>
     );
   }
