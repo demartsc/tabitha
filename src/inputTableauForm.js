@@ -4,7 +4,7 @@ import SimpleReport from './tableauViz.js'
 class InputTableau extends Component {
  constructor(props) {
     super(props);
-    this.state = { url: this.props.url, oldURL: this.props.url };
+    this.state = { url: this.props.url};
 
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleButtonClick = this.handleButtonClick.bind(this);
@@ -17,7 +17,7 @@ class InputTableau extends Component {
 
   handleButtonClick(event) {
     let tempURL = this.state.url;
-    this.setState({ oldURL: tempURL });
+    this.setState({ url: tempURL });
     console.log(this.state);
     //this.props({ url: event.target.value });
   }
@@ -39,7 +39,7 @@ class InputTableau extends Component {
       <br />
       <br />
       <SimpleReport
-        url={this.state.oldURL} />
+        url={this.state.url} />
       </div>
     );
   }
