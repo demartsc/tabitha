@@ -11,7 +11,6 @@ class SimpleReport extends Component {
 		  hideTabs: true
 		};
 
-		console.log(this.props);
 		return (
 		  <TableauReport
 		    url={this.props.url}
