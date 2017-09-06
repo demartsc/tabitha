@@ -12,14 +12,11 @@ class InputTableau extends Component {
 
   handleInputChange(event) {
     this.state = {url: event.target.value};
-    //this.props({url: event.target.value});
   }
 
   handleButtonClick(event) {
     let tempURL = this.state.url;
     this.setState({ url: tempURL });
-    console.log(this.state);
-    //this.props({ url: event.target.value });
   }
 
   render() {
@@ -46,10 +43,3 @@ class InputTableau extends Component {
 }
 
 export default InputTableau;
-
-/*
-          <button
-            onClick={handleButtonClick}>
-            Submit to Tabitha
-          </button>
-*/
