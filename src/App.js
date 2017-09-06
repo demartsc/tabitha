@@ -14,7 +14,7 @@ class App extends Component {
           <h2>Welcome to Tabitha</h2>
         </div>
         <br />
-        <InputTableau className="App-input" />
+        <InputTableau className="App-input" url='https://public.tableau.com/views/PhaseoftheMoon/MoonPhase?:embed=y&:display_count=yes' />
       </div>
     );
   }
