@@ -20,7 +20,11 @@ class Speak extends Component {
 
   //left off here, the issue is that the state is set before the voices are mapped
   componentDidMount() {
-    this.setState({ loading: false });
+    var that = this;
+    setTimeout(function() {
+      that.setState({ loading: false });
+    }, 1000);
+
     //this.setState({text: this.props.text, voice: this.props.voice});
   }
 

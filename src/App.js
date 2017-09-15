@@ -12,14 +12,17 @@ class App extends Component {
       <div className="App">
         <div className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to Tabitha </h2>
+          <h2>Tabitha: Powered by React + JS + Tableau</h2>
         </div>
         <br />
         <InputTableau
           className="App-input"
           url="https://public.tableau.com/views/PhaseoftheMoon/MoonPhase?:embed=y&:display_count=yes"
         />
-        <Speak text="testing" voice="UK English Female" />
+        <Speak
+          text="Hi! I am Tabitha. Enter the URL for your visualization below. Then I will learn all about it."
+          voice="UK English Female"
+        />
       </div>
     );
   }
