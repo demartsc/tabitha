@@ -5,17 +5,14 @@ class Speak extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      text: this.props.text,
-      voice: this.props.voice,
       loading: true
     };
-
     this.talk = this.talk.bind(this);
   }
 
   talk() {
-    console.log(this.state);
-    window.speak(this.state.text, this.state.voice);
+    console.log(this.props);
+    window.speak(this.props.text, this.props.voice);
   }
 
   //left off here, the issue is that the state is set before the voices are mapped
@@ -24,13 +21,23 @@ class Speak extends Component {
     setTimeout(function() {
       that.setState({ loading: false });
     }, 1000);
-
-    //this.setState({text: this.props.text, voice: this.props.voice});
   }
 
   render() {
     return <div className="speakingDiv">{this.talk()}</div>;
   }
 }
+
+Speak.PropTypes = {
+  text: React.PropTypes.string.isRequired,
+  voice: React.PropTypes.string.isRequired,
+  loading: React.PropTypes.bool
+};
+
+Speak.defaultProps = {
+  text: 'default text',
+  voice: 'UK English Female',
+  loading: false
+};
 
 export default Speak;
