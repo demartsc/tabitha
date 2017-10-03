@@ -15,7 +15,7 @@ class InputTableau extends React.Component {
     this.handleButtonClick = this.handleButtonClick.bind(this);
   }
 
-  initTableau() {
+  initTableau(vizURL) {
     const options = {
       hideTabs: true,
       width: '700px',
@@ -54,10 +54,13 @@ class InputTableau extends React.Component {
       }
     };
 
-    let viz = new Tableau.Viz(this.container, this.state.url, options);
-    this.setState({
-      viz: viz
-    });
+    // cleanup
+    if (this.viz) {
+      this.viz.dispose();
+      this.viz = null;
+    }
+
+    let viz = new Tableau.Viz(this.container, vizURL, options);
   }
 
   handleInputChange(event) {
@@ -67,10 +70,11 @@ class InputTableau extends React.Component {
   handleButtonClick(event) {
     let tempURL = this.state.url;
     this.setState({ url: tempURL });
+    //this.initTableau(this.state.url); // this causes an error at the moment.
   }
 
   componentDidMount() {
-    this.initTableau();
+    this.initTableau(this.state.url);
   }
 
   render() {
