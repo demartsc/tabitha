@@ -1,11 +1,9 @@
-import React, { Component, PropTypes } from 'react';
+import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import Speak from './Speak.js';
 import InputTableau from './inputTableauForm.js';
-import tableau from 'tableau-api';
 
-class App extends Component {
+class App extends React.Component {
   constructor(props) {
     super(props);
 
@@ -29,12 +27,13 @@ class App extends Component {
           <h2>Tabitha: Powered by React + JS + Tableau</h2>
         </div>
         <br />
-        <InputTableau className="App-input" url={this.state.url} />
-        <Speak text={this.state.speakText} voice="UK English Female" />
+        <InputTableau
+          className="App-input"
+          url={this.state.url}
+          speakText={this.state.speakText}
+        />
       </div>
     );
-    //const wrkbk = this.viz.getWorkbook().getActiveSheet().getWorksheets()[0];
-    console.log('wrkbk');
   }
 }
 

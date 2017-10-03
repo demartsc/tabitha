@@ -1,7 +1,8 @@
-import React, { Component, PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import responsiveVoice from 'responsivevoice';
 
-class Speak extends Component {
+class Speak extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
