@@ -24,14 +24,26 @@ class InputTableau extends React.Component {
         const wrkbk = viz.getWorkbook();
         const activeSheet = viz.getWorkbook().getActiveSheet();
         const name = wrkbk.getName();
-        this.setState({
-          speakText: 'this workbook is named ' + name
-        });
-        /*
-              wrkbk.getPublishedSheetsInfo().then((t) => {
-                console.log(t);
-              });
-              */
+        const pubSheets = wrkbk.getPublishedSheetsInfo();
+        if (pubSheets.length == 1) {
+          this.setState({
+            speakText:
+              'This workbook is named ' +
+              name +
+              ' and has ' +
+              pubSheets.length.toString() +
+              ' sheet published.'
+          });
+        } else {
+          this.setState({
+            speakText:
+              'This workbook is named ' +
+              name +
+              ' and has ' +
+              pubSheets.length.toString() +
+              ' sheets published.'
+          });
+        }
         wrkbk.getParametersAsync().then(t => {
           this.setState({
             speakText:
