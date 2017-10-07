@@ -9,7 +9,7 @@ class App extends React.Component {
 
     this.state = {
       url:
-        'https://public.tableau.com/views/PhaseoftheMoon/MoonPhase?:embed=y&:display_count=yes',
+        'https://public.tableau.com/views/TableauRosePetals/TableauRose?:embed=y&:display_count=yes',
       speakText:
         'Hi! I am Tabitha. Enter the URL for your visualization below. Then I will learn all about it.',
       paramNames: [],
