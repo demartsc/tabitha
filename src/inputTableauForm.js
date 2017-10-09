@@ -2,6 +2,7 @@ import React from 'react';
 import propTypes from 'prop-types';
 import Tableau from 'tableau-api';
 import Speak from './Speak.js';
+import TableauReport from 'tableau-react';
 
 class InputTableau extends React.Component {
   constructor(props) {
@@ -15,6 +16,7 @@ class InputTableau extends React.Component {
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleButtonClick = this.handleButtonClick.bind(this);
     this.initTableau = this.initTableau.bind(this);
+    this.tempURL = null;
   }
 
   initTableau() {
@@ -30,12 +32,12 @@ class InputTableau extends React.Component {
         const name = wrkbk.getName();
         const objs = activeSheet.getObjects();
         const pubSheets = wrkbk.getPublishedSheetsInfo();
-        console.log(objs);
-        console.log(sheets);
+        //console.log(objs);
+        //console.log(sheets);
 
         for (let i = 0; i < sheets.length; i++) {
           sheets[i].getFiltersAsync().then(f => {
-            console.log(f);
+            //console.log(f);
           });
         }
 
@@ -74,52 +76,59 @@ class InputTableau extends React.Component {
               });
             }
           }
-          console.log(t);
+          //console.log(t);
         });
       }
     };
 
-    // cleanup if viz already exists
-    // was trying to work with state, but state goes away between render and update submission by user
-    if (this.state.viz) {
-      let viz = this.state.viz;
-      console.log(this.state.viz);
-      console.log(this.viz);
-      this.viz.dispose();
-      this.viz = null;
-    } else {
-      console.log(this.state.viz);
-    }
-
-    /*  to remove, should be replaced by above
-    console.log(viz);
-    if (this.viz) {
-      this.viz.dispose();
-      this.viz = null;
-    }
-*/
     let viz = new Tableau.Viz(this.container, vizURL, options);
-    this.setState({
-      viz: viz
-    });
+    if (this.state.speakText == 'Thanks! I am updating your workbook now.') {
+      this.setState({
+        viz: viz,
+        speakText: ''
+      });
+    } else {
+      this.setState({
+        viz: viz
+      });
+    }
   }
 
   handleInputChange(event) {
-    this.state = { url: event.target.value };
+    //this.setState({ url: event.target.value });
+    this.tempURL = event.target.value;
   }
 
   handleButtonClick(event) {
-    console.log('uncomment this call for testing');
-    // currently this causes an error because state has been cleaned out at this point
-    //this.initTableau(); // we are just using state, so don't need to pass anything
+    this.setState({
+      url: this.tempURL,
+      speakText: 'Thanks! I am updating your workbook now.'
+    });
   }
 
   componentDidMount() {
     this.initTableau(); // we are just using state, so don't need to pass anything
   }
 
+  // one problem is that we are changing state a lot we only want this to be called on viz update.
+  componentDidUpdate(prevProps, prevState) {
+    console.log('updated');
+    if (prevState.url != this.state.url) {
+      this.initTableau(); // we are just using state, so don't need to pass anything
+    }
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    console.log('will update');
+
+    if (this.state.viz && nextState.url != this.state.url) {
+      this.state.viz.dispose();
+      this.state.viz = null;
+    }
+  }
+
   render() {
-    console.log(this.state);
+    //console.log(this.state);
     return (
       <div className="tabithaRootDiv">
         <input

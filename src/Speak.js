@@ -12,7 +12,7 @@ class Speak extends React.Component {
   }
 
   talk() {
-    //console.log(this.props);
+    console.log(this.props);
     window.speak(this.props.text, this.props.voice);
   }
 
