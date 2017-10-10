@@ -15,7 +15,8 @@
     "react-native-speech": "^0.1.2",
     "react-scripts": "1.0.12",
     "responsivevoice": "^0.2.1",
-    "tableau-react": "^1.0.2"
+    "tableau-react": "^1.0.2",
+    "underscore": "^1.8.3"
   },
   "lint-staged": {
     "src/**/*.{js,jsx,json,css}": [
