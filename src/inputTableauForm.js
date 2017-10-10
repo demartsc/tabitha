@@ -40,8 +40,14 @@ class InputTableau extends React.Component {
         //console.log(sheets);
 
         // need to check what happens with automatic sized workbooks...
-        this.width = activeSheet.getSize().maxSize.width;
-        this.height = activeSheet.getSize().maxSize.height;
+        console.log(activeSheet.getSize());
+        if (activeSheet.getSize().maxSize) {
+          this.width = activeSheet.getSize().maxSize.width;
+          this.height = activeSheet.getSize().maxSize.height;
+        } else {
+          this.width = 800;
+          this.height = 800;
+        }
 
         // this will set the frame size the maximum allowed by the viz
         // need to vet whether this will be a problem with automatic vizzes however
