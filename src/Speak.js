@@ -21,6 +21,7 @@ class Speak extends React.Component {
     var that = this;
     setTimeout(function() {
       that.setState({ loading: false });
+      console.log('timeout happened');
     }, 1000);
   }
 

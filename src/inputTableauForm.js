@@ -1,9 +1,10 @@
 import React from 'react';
 import propTypes from 'prop-types';
-import Tableau from 'tableau-api';
 import Speak from './Speak.js';
+import Dictaphone from './Listen.js';
+import Tableau from 'tableau-api';
 import TableauReport from 'tableau-react';
-import underscore from 'underscore';
+import { uniqBy } from 'lodash'; // may not need this as sheets are different or filters are not duplicated
 
 class InputTableau extends React.Component {
   constructor(props) {
@@ -36,7 +37,7 @@ class InputTableau extends React.Component {
         const objs = activeSheet.getObjects();
         const pubSheets = wrkbk.getPublishedSheetsInfo();
         console.log(objs);
-        console.log(objs[2].getObjectType());
+        const filters = [];
         //console.log(sheets);
 
         // need to check what happens with automatic sized workbooks...
@@ -55,9 +56,16 @@ class InputTableau extends React.Component {
         // https://onlinehelp.tableau.com/current/api/js_api/en-us/JavaScriptAPI/js_api_sample_resize.html
         viz.setFrameSize(this.width, this.height + 100);
 
+        // we may not even need this as get objects will return the filters if they are visible.
         for (let i = 0; i < sheets.length; i++) {
           sheets[i].getFiltersAsync().then(f => {
-            //console.log(f);
+            for (let j = 0; j < f.length; j++) {
+              filters.push(f[j]); // this saves all filters (even duplicates across sheets) into an array
+              console.log(filters);
+            }
+            //this doesn't work, but the idea here is to unique the filter array
+            //uniqBy(filters, function(elem) { return [elem.fieldRole, elem.caption, elem.dataSourceName, elem.field, elem.type].join(); });
+            //console.log(filters);
           });
         }
 
@@ -154,6 +162,7 @@ class InputTableau extends React.Component {
     //console.log(this.state);
     return (
       <div className="tabithaRootDiv">
+        <button onClick={this.resetTranscript}>Reset Dictation</button>
         <input
           onChange={this.handleInputChange}
           placeholder="Input Tableau Public URL"
@@ -163,6 +172,7 @@ class InputTableau extends React.Component {
         />
         <button onClick={this.handleButtonClick}>Submit to Tabitha</button>
         <br />
+        <Dictaphone autoStart continuous lang="en-IN" />
         <br />
         <div
           id="tableauViz"
