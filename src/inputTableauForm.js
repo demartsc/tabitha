@@ -3,7 +3,6 @@ import propTypes from 'prop-types';
 import Speak from './Speak.js';
 import Dictaphone from './Listen.js';
 import Tableau from 'tableau-api';
-import TableauReport from 'tableau-react';
 import { uniqBy } from 'lodash'; // may not need this as sheets are different or filters are not duplicated
 
 class InputTableau extends React.Component {

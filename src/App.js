@@ -1,5 +1,6 @@
 import React from 'react';
 import logo from './logo.svg';
+import tabIcon from './tableau.gif';
 import './App.css';
 import InputTableau from './inputTableauForm.js';
 
@@ -24,6 +25,7 @@ class App extends React.Component {
       <div className="App">
         <div className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
+          <img src={tabIcon} className="App-logo" alt="logo" />
           <h2>Tabitha: Powered by React + JS + Tableau</h2>
         </div>
         <br />
