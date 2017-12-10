@@ -141,18 +141,22 @@ class InputTableau extends React.Component {
 
     //initiate the viz
     this.viz = new window.tableau.Viz(this.container, vizURL, options);
+    this.setState({
+      viz: this.viz,
+      speakText: ''
+    });
 
     //if changing viz need to wipe out speakText - can possibly remove
-    if (this.state.speakText === 'Thanks! I am updating your workbook now.') {
-      this.setState({
-        viz: this.viz,
-        speakText: ''
-      });
-    } else {
-      this.setState({
-        viz: this.viz
-      });
-    }
+    // if (this.state.speakText === 'Thanks! I am updating your workbook now.') {
+    //   this.setState({
+    //     viz: this.viz,
+    //     speakText: ''
+    //   });
+    // } else {
+    //   this.setState({
+    //     viz: this.viz
+    //   });
+    // }
   }
 
   startTalking() {
