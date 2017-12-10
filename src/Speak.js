@@ -32,9 +32,9 @@ class Speak extends React.Component {
 }
 
 Speak.PropTypes = {
-  text: React.PropTypes.string.isRequired,
-  voice: React.PropTypes.string.isRequired,
-  loading: React.PropTypes.bool
+  text: PropTypes.string.isRequired,
+  voice: PropTypes.string.isRequired,
+  loading: PropTypes.bool
 };
 
 Speak.defaultProps = {
