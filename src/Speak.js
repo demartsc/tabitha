@@ -12,18 +12,19 @@ class Speak extends React.Component {
   }
 
   talk() {
-    console.log(this.props);
-    window.speak(this.props.text, this.props.voice);
+    console.log('speak.js', this.props, this.props.parameters);
+    window.speak(this.props.text, this.props.voice, this.props.parameters);
   }
 
   //left off here, the issue is that the state is set before the voices are mapped
-  componentDidMount() {
-    var that = this;
-    setTimeout(function() {
-      that.setState({ loading: false });
-      console.log('timeout happened');
-    }, 1000);
-  }
+  // componentDidMount() {
+  //   var that = this;
+  //   setTimeout(function() {
+  //     that.setState({ loading: false });
+  //     //console.log('timeout happened');
+  //   }, 1000);
+  // }
+  //
 
   render() {
     return <div className="speakingDiv">{this.talk()}</div>;
