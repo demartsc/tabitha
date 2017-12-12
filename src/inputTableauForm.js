@@ -1,34 +1,50 @@
 import React from 'react';
 import propTypes from 'prop-types';
 import Speak from './Speak.js';
-import Dictaphone from './Listen.js';
+import SpeechRecognition from './Listen.js';
 import Tableau from 'tableau-api';
-import { uniqBy } from 'lodash'; // may not need this as sheets are different or filters are not duplicated
 
 class InputTableau extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       url: this.props.url,
-      speakText: this.props.speakText,
+      speakText:
+        'Hi! I am Tabitha. Enter the URL for your visualization below. Then I will learn all about it.',
       voice: 'UK English Female',
       viz: null,
+      interactive: false,
       listenUp: false,
       button: 'start',
       description: false
     };
 
     this.toggleButton = this.toggleButton.bind(this);
-    this.startTalking = this.startTalking.bind(this);
-    this.doneTalking = this.doneTalking.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleButtonClick = this.handleButtonClick.bind(this);
     this.initTableau = this.initTableau.bind(this);
     this.firstInter = this.firstInter.bind(this);
+
+    this.startTalking = this.startTalking.bind(this);
+    this.doneTalking = this.doneTalking.bind(this);
+    this.filterAsked = this.filterAsked.bind(this);
+    this.parmAsked = this.parmAsked.bind(this);
+    this.tabAsked = this.tabAsked.bind(this);
+    this.markAsked = this.markAsked.bind(this);
+
     this.tempURL = null;
     this.width = 800; // default, although this gets overwritten in the initTableau function
     this.height = 800; // default, although this gets overwritten in the initTableau function
     this.viz = null;
+
+    //send functions to listener
+    this.listenFunctions = {
+      filter: this.filterAsked,
+      parameter: this.parmAsked,
+      parm: this.parmAsked,
+      tab: this.tabAsked,
+      mark: this.markAsked
+    };
 
     this.parameters = {
       onstart: this.startTalking,
@@ -71,9 +87,6 @@ class InputTableau extends React.Component {
           filters.push(f[j]); // this saves all filters (even duplicates across sheets) into an array
           //console.log(filters);
         }
-        //this doesn't work, but the idea here is to unique the filter array
-        //uniqBy(filters, function(elem) { return [elem.fieldRole, elem.caption, elem.dataSourceName, elem.field, elem.type].join(); });
-        //console.log(filters);
       });
     }
 
@@ -134,17 +147,20 @@ class InputTableau extends React.Component {
       width: this.width,
       height: this.height,
       onFirstInteractive: () => {
-        console.log('made it');
-        this.firstInter();
+        this.setState({
+          viz: this.viz,
+          interactive: true
+        });
+        //this.firstInter();
       }
     };
 
     //initiate the viz
     this.viz = new window.tableau.Viz(this.container, vizURL, options);
-    this.setState({
-      viz: this.viz,
-      speakText: ''
-    });
+    // this.setState({
+    //   viz: this.viz,
+    //   speakText: ''
+    // });
 
     //if changing viz need to wipe out speakText - can possibly remove
     // if (this.state.speakText === 'Thanks! I am updating your workbook now.') {
@@ -162,8 +178,29 @@ class InputTableau extends React.Component {
   startTalking() {
     console.log('succesfully event listened for start of speech');
   }
+
   doneTalking() {
     console.log('succesfully event listened for end of speech');
+  }
+
+  filterAsked() {
+    console.log('filter was asked');
+    //this needs to be some code that will filter based on command
+  }
+
+  parmAsked() {
+    console.log('parameter was asked');
+    //this needs to be some code that will filter based on command
+  }
+
+  tabAsked() {
+    console.log('tab was asked');
+    //this needs to be some code that will filter based on command
+  }
+
+  markAsked() {
+    console.log('mark was asked');
+    //this needs to be some code that will filter based on command
   }
 
   handleInputChange(event) {
@@ -188,6 +225,7 @@ class InputTableau extends React.Component {
   handleButtonClick(event) {
     this.setState({
       url: this.tempURL,
+      interactive: false,
       speakText: 'Thanks! I am updating your workbook now.',
       description: false
     });
@@ -203,10 +241,15 @@ class InputTableau extends React.Component {
     if (prevState.url !== this.state.url) {
       this.initTableau(); // we are just using state, so don't need to pass anything
     }
+
+    if (this.state.viz && this.state.interactive && !prevState.interactive) {
+      console.log('interactive flipped');
+      this.firstInter();
+    }
   }
 
   componentWillUpdate(nextProps, nextState) {
-    console.log('will update');
+    console.log('will update', this.state, nextState); // error checking to remove
 
     //if we have a new viz we need to dispose of the existing one
     if (this.state.viz && nextState.url !== this.state.url) {
@@ -230,7 +273,15 @@ class InputTableau extends React.Component {
         />
         <button onClick={this.handleButtonClick}>Submit to Tabitha</button>
         <br />
-        <Dictaphone autoStart continuous lang="en-IN" viz={this.state.viz} />
+        <SpeechRecognition
+          autoStart
+          continuous
+          listenUp
+          lang="en-IN"
+          viz={this.state.viz}
+          onListen={this.listenFunctions} //test this with filter first
+          interactive={this.state.interactive}
+        />
         <br />
         <div
           id="tableauViz"
@@ -242,6 +293,7 @@ class InputTableau extends React.Component {
           text={this.state.speakText}
           voice={this.state.voice}
           parameters={this.parameters}
+          interactive={this.state.interactive}
         />
       </div>
     );
@@ -249,8 +301,7 @@ class InputTableau extends React.Component {
 }
 
 InputTableau.propTypes = {
-  url: propTypes.string.isRequired,
-  speakText: propTypes.string.isRequired
+  url: propTypes.string.isRequired
 };
 
 export default InputTableau;

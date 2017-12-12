@@ -16,7 +16,12 @@ class Dictaphone extends React.Component {
     console.log('dictation workbook', wrkbk);
   }
 
-  componentWillMount() {}
+  parseFuncs() {
+    for (let i = 0; i < this.props.onListen.length; i++) {
+      console.log(this.props.onListen[i]);
+      // in here we can call each function that has been sent with final transcript
+    }
+  }
 
   render() {
     console.log('listen.js', this.props);
@@ -27,8 +32,14 @@ class Dictaphone extends React.Component {
       resetTranscript,
       browserSupportsSpeechRecognition,
       viz,
-      listenUp
+      listenUp,
+      onListen,
+      interactive
     } = this.props;
+
+    //split the words into array for easier analysis
+    var words = finalTranscript.split(' ');
+    console.log(words);
 
     if (!browserSupportsSpeechRecognition) {
       return null;
@@ -38,9 +49,12 @@ class Dictaphone extends React.Component {
       return null;
     } else {
       console.log(this.props);
-      if (viz) {
+      if (viz && interactive) {
         console.log(viz);
         console.log(viz.getWorkbook().changeParameterValueAsync('K', 10));
+        console.log(
+          viz.getWorkbook().changeParameterValueAsync('Point Density', 500)
+        );
       }
       //this.initTableau(viz).bind(this);
 
@@ -59,11 +73,13 @@ Dictaphone.propTypes = {
   resetTranscript: PropTypes.func,
   browserSupportsSpeechRecognition: PropTypes.bool,
   listenUp: PropTypes.bool,
-  viz: PropTypes.object
+  viz: PropTypes.object,
+  onListen: PropTypes.object
 };
 
 const options = {
-  autoStart: false
+  autoStart: true,
+  listenUp: false
 };
 
 export default SpeechRecognition(options)(Dictaphone);
