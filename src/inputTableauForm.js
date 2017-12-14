@@ -16,7 +16,8 @@ class InputTableau extends React.Component {
       interactive: false,
       listenUp: false,
       button: 'start',
-      description: false
+      description: false,
+      resetDication: false
     };
 
     this.toggleButton = this.toggleButton.bind(this);
@@ -27,6 +28,8 @@ class InputTableau extends React.Component {
 
     this.startTalking = this.startTalking.bind(this);
     this.doneTalking = this.doneTalking.bind(this);
+    this.resetTranscript = this.resetTranscript.bind(this);
+
     this.filterAsked = this.filterAsked.bind(this);
     this.parmAsked = this.parmAsked.bind(this);
     this.tabAsked = this.tabAsked.bind(this);
@@ -183,6 +186,12 @@ class InputTableau extends React.Component {
     console.log('succesfully event listened for end of speech');
   }
 
+  resetTranscript() {
+    this.setState({
+      resetDication: true
+    });
+  }
+
   filterAsked() {
     console.log('filter was asked');
     //this needs to be some code that will filter based on command
@@ -190,7 +199,9 @@ class InputTableau extends React.Component {
 
   parmAsked() {
     console.log('parameter was asked');
-    //this needs to be some code that will filter based on command
+    let wrkbk = this.state.viz.getWorkbook();
+    wrkbk.changeParameterValueAsync('K', 8);
+    console.log(wrkbk);
   }
 
   tabAsked() {
@@ -200,6 +211,15 @@ class InputTableau extends React.Component {
 
   markAsked() {
     console.log('mark was asked');
+    console.log(this.state.viz.getWorkbook().getActiveSheet());
+    let sheets = this.state.viz
+      .getWorkbook()
+      .getActiveSheet()
+      .getWorksheets();
+    for (let y = 0; y < sheets.length; y++) {
+      console.log(sheets[y]);
+      sheets[y].selectMarksAsync('Index', 100, 'REPLACE');
+    }
     //this needs to be some code that will filter based on command
   }
 

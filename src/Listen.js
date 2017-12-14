@@ -5,26 +5,32 @@ import Tableau from 'tableau-api';
 
 // source: https://www.npmjs.com/package/react-speech-recognition
 class Dictaphone extends React.Component {
-  initTableau(viz) {
-    const wrkbk = viz.getWorkbook();
-    const activeSheet = wrkbk.getActiveSheet();
-    const sheets = activeSheet.getWorksheets();
-    const name = wrkbk.getName();
-    const objs = activeSheet.getObjects();
-    const pubSheets = wrkbk.getPublishedSheetsInfo();
-
-    console.log('dictation workbook', wrkbk);
+  constructor(props) {
+    super(props);
   }
 
-  parseFuncs() {
-    for (let i = 0; i < this.props.onListen.length; i++) {
-      console.log(this.props.onListen[i]);
-      // in here we can call each function that has been sent with final transcript
+  componentWillUpdate(nextProps) {
+    if (this.props.finalTranscript != nextProps.finalTranscript) {
+      console.log('finalTranscript updated', nextProps.finalTranscript);
+
+      //split the words into array for easier analysis
+      var words = nextProps.finalTranscript.split(' ');
+      console.log(words);
+
+      //now check if any words match our function array
+      for (let w = 0; w < words.length; w++) {
+        if (words[w] in this.props.onListen) {
+          console.log(
+            'we found ' + words[w] + ':',
+            this.props.onListen[words[w]]
+          );
+          this.props.onListen[words[w]]();
+        }
+      }
     }
   }
 
   render() {
-    console.log('listen.js', this.props);
     const {
       transcript,
       interimTranscript,
@@ -34,15 +40,18 @@ class Dictaphone extends React.Component {
       viz,
       listenUp,
       onListen,
-      interactive
+      interactive,
+      resetDication
     } = this.props;
-
-    //split the words into array for easier analysis
-    var words = finalTranscript.split(' ');
-    console.log(words);
 
     if (!browserSupportsSpeechRecognition) {
       return null;
+    }
+
+    //this does not work yet
+    if (resetDication) {
+      console.log('resetting');
+      resetTranscript();
     }
 
     if (!listenUp) {
@@ -51,12 +60,9 @@ class Dictaphone extends React.Component {
       console.log(this.props);
       if (viz && interactive) {
         console.log(viz);
-        console.log(viz.getWorkbook().changeParameterValueAsync('K', 10));
-        console.log(
-          viz.getWorkbook().changeParameterValueAsync('Point Density', 500)
-        );
+        //console.log(viz.getWorkbook().changeParameterValueAsync('K', 10));
+        //console.log(viz.getWorkbook().changeParameterValueAsync('Point Density', 500));
       }
-      //this.initTableau(viz).bind(this);
 
       return (
         <div>
