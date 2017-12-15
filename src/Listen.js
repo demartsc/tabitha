@@ -14,8 +14,9 @@ class Dictaphone extends React.Component {
       console.log('finalTranscript updated', nextProps.finalTranscript);
 
       //split the words into array for easier analysis
-      var words = nextProps.finalTranscript.split(' ');
-      console.log(words);
+      var words = nextProps.finalTranscript.toUpperCase().split(' ');
+      //console.log(words);
+      this.props.onListen['activate'](words);
 
       //now check if any words match our function array
       for (let w = 0; w < words.length; w++) {
@@ -57,9 +58,9 @@ class Dictaphone extends React.Component {
     if (!listenUp) {
       return null;
     } else {
-      console.log(this.props);
+      //console.log(this.props);
       if (viz && interactive) {
-        console.log(viz);
+        //console.log(viz);
         //console.log(viz.getWorkbook().changeParameterValueAsync('K', 10));
         //console.log(viz.getWorkbook().changeParameterValueAsync('Point Density', 500));
       }

@@ -3,6 +3,7 @@ import propTypes from 'prop-types';
 import Speak from './Speak.js';
 import SpeechRecognition from './Listen.js';
 import Tableau from 'tableau-api';
+import _ from 'lodash';
 
 class InputTableau extends React.Component {
   constructor(props) {
@@ -13,6 +14,7 @@ class InputTableau extends React.Component {
         'Hi! I am Tabitha. Enter the URL for your visualization below. Then I will learn all about it.',
       voice: 'UK English Female',
       viz: null,
+      vizActions: [],
       interactive: false,
       listenUp: false,
       button: 'start',
@@ -30,23 +32,24 @@ class InputTableau extends React.Component {
     this.doneTalking = this.doneTalking.bind(this);
     this.resetTranscript = this.resetTranscript.bind(this);
 
-    this.filterAsked = this.filterAsked.bind(this);
-    this.parmAsked = this.parmAsked.bind(this);
-    this.tabAsked = this.tabAsked.bind(this);
-    this.markAsked = this.markAsked.bind(this);
+    this.tabithaActivate = this.tabithaActivate.bind(this);
+    this.tabithaChange = this.tabithaChange.bind(this);
+    this.tabithaSelect = this.tabithaSelect.bind(this);
+    this.tabithaMove = this.tabithaMove.bind(this);
 
     this.tempURL = null;
     this.width = 800; // default, although this gets overwritten in the initTableau function
     this.height = 800; // default, although this gets overwritten in the initTableau function
     this.viz = null;
+    this.vizActions = [];
+    this.pubSheets = null;
 
     //send functions to listener
     this.listenFunctions = {
-      filter: this.filterAsked,
-      parameter: this.parmAsked,
-      parm: this.parmAsked,
-      tab: this.tabAsked,
-      mark: this.markAsked
+      activate: this.tabithaActivate,
+      change: this.tabithaChange,
+      select: this.tabithaSelect,
+      move: this.tabithaMove
     };
 
     this.parameters = {
@@ -56,16 +59,13 @@ class InputTableau extends React.Component {
   }
 
   firstInter() {
-    console.log('in Tableau', this.viz);
+    //console.log('in Tableau', this.viz);
     const wrkbk = this.viz.getWorkbook();
     const activeSheet = this.viz.getWorkbook().getActiveSheet();
     const sheets = activeSheet.getWorksheets();
     const name = wrkbk.getName();
     const objs = activeSheet.getObjects();
-    const pubSheets = wrkbk.getPublishedSheetsInfo();
-    //console.log(objs);
     const filters = [];
-    //console.log(sheets);
 
     // need to check what happens with automatic sized workbooks...
     //console.log(activeSheet.getSize());
@@ -83,23 +83,25 @@ class InputTableau extends React.Component {
     // https://onlinehelp.tableau.com/current/api/js_api/en-us/JavaScriptAPI/js_api_sample_resize.html
     this.viz.setFrameSize(this.width, this.height + 100);
 
-    // we may not even need this as get objects will return the filters if they are visible.
-    for (let i = 0; i < sheets.length; i++) {
-      sheets[i].getFiltersAsync().then(f => {
-        for (let j = 0; j < f.length; j++) {
-          filters.push(f[j]); // this saves all filters (even duplicates across sheets) into an array
-          //console.log(filters);
-        }
+    // get published sheets and save them for tableauContainer
+    this.pubSheets = wrkbk.getPublishedSheetsInfo();
+    this.vizActions = [];
+    for (let v = 0; v < this.pubSheets.length; v++) {
+      this.vizActions.push({
+        caption: this.pubSheets[v].getName(),
+        name: this.pubSheets[v].getName(),
+        type: 'tab',
+        values: []
       });
     }
 
-    if (pubSheets.length === 1) {
+    if (this.pubSheets.length === 1) {
       this.setState({
         speakText:
           'This workbook is named ' +
           name +
           ' and has ' +
-          pubSheets.length.toString() +
+          this.pubSheets.length.toString() +
           ' sheet published.'
       });
     } else {
@@ -108,8 +110,23 @@ class InputTableau extends React.Component {
           'This workbook is named ' +
           name +
           ' and has ' +
-          pubSheets.length.toString() +
+          this.pubSheets.length.toString() +
           ' sheets published.'
+      });
+    }
+
+    // we may not even need this as get objects will return the filters if they are visible.
+    for (let i = 0; i < sheets.length; i++) {
+      sheets[i].getFiltersAsync().then(f => {
+        for (let j = 0; j < f.length; j++) {
+          filters.push(f[j]); // this saves all filters (even duplicates across sheets) into an array
+          this.vizActions.push({
+            caption: f[j].$caption,
+            name: f[j].getFieldName(),
+            type: 'filter',
+            values: []
+          });
+        }
       });
     }
 
@@ -119,6 +136,12 @@ class InputTableau extends React.Component {
       });
       // if the user has provided the description parameter this will read it back to the user, otherwise it will do nothing.
       for (let j = 0; j < t.length; j++) {
+        this.vizActions.push({
+          caption: t[j].getName(),
+          name: t[j].getName(),
+          type: 'parameter',
+          values: []
+        });
         if (t[j].getName().toUpperCase() === 'DESCRIPTION') {
           this.setState({
             description: true,
@@ -136,9 +159,15 @@ class InputTableau extends React.Component {
       if (this.state.description === false) {
         this.setState({
           speakText:
-            'Unfortunately, the author has not provided a description for us. '
+            'Unfortunately, the author has not provided a description for us.'
         });
       }
+      //use lodash to unique the array object list created (in case there are filters on multiple tabs)
+      this.vizActions = _.uniqWith(this.vizActions, _.isEqual);
+      this.setState({
+        vizActions: this.vizActions
+      });
+      //console.log(this.state.vizActions);
       //console.log(t);
     });
   }
@@ -192,24 +221,44 @@ class InputTableau extends React.Component {
     });
   }
 
-  filterAsked() {
-    console.log('filter was asked');
-    //this needs to be some code that will filter based on command
+  tabithaActivate(words) {
+    // we only want to start doing something when the phrase tabitha is said
+    console.log(words);
+    if (_.indexOf(words, 'TABITHA') >= 0) {
+      for (let k = 0; k < words.length; k++) {
+        if (words[k].toUpperCase() === 'TABITHA') {
+          console.log('tabitha activated');
+          if (words[k + 1] === 'CHANGE') {
+            // left off here, we need to call functions based on submitted
+            //if we are on change we either call parm or filter based on type
+            // need to figure out how we are going to handle multi word fields
+          } else if (words[k + 1] === 'SELECT') {
+            this.tabithaSelect(words, k);
+          } else if (words[k + 1] === 'MOVE') {
+            this.tabithaMove(words, k);
+          } else {
+            console.log('tabitha not activated, invalid ask');
+          }
+        }
+      }
+    } else {
+      console.log('tabitha not found');
+    }
   }
 
-  parmAsked() {
+  tabithaMove() {
+    console.log('in tabitha move');
+  }
+
+  tabithaChange(words, k) {
     console.log('parameter was asked');
+    for (let j = k + 1; j < words.length; j++) {}
     let wrkbk = this.state.viz.getWorkbook();
     wrkbk.changeParameterValueAsync('K', 8);
     console.log(wrkbk);
   }
 
-  tabAsked() {
-    console.log('tab was asked');
-    //this needs to be some code that will filter based on command
-  }
-
-  markAsked() {
+  tabithaSelect() {
     console.log('mark was asked');
     console.log(this.state.viz.getWorkbook().getActiveSheet());
     let sheets = this.state.viz
@@ -257,7 +306,7 @@ class InputTableau extends React.Component {
 
   // one problem is that we are changing state a lot we only want this to be called on viz update.
   componentDidUpdate(prevProps, prevState) {
-    console.log('updated');
+    //console.log('updated');
     if (prevState.url !== this.state.url) {
       this.initTableau(); // we are just using state, so don't need to pass anything
     }
@@ -269,7 +318,7 @@ class InputTableau extends React.Component {
   }
 
   componentWillUpdate(nextProps, nextState) {
-    console.log('will update', this.state, nextState); // error checking to remove
+    //console.log('will update', this.state, nextState); // error checking to remove
 
     //if we have a new viz we need to dispose of the existing one
     if (this.state.viz && nextState.url !== this.state.url) {
@@ -278,7 +327,7 @@ class InputTableau extends React.Component {
   }
 
   render() {
-    console.log(this.state);
+    //console.log(this.state);
 
     return (
       <div className="tabithaRootDiv">

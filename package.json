@@ -9,6 +9,7 @@
     "husky": "^0.14.3",
     "jquery": "^3.2.1",
     "lint-staged": "^4.1.3",
+    "lodash": "^4.17.4",
     "lodash.intersection": "^4.4.0",
     "prettier": "^1.6.1",
     "react": "^15.6.1",
@@ -18,7 +19,7 @@
     "react-native-speech": "^0.1.2",
     "react-scripts": "1.0.12",
     "react-speech-recognition": "^1.0.4",
-    "responsivevoice": "^0.3.0",
+    "responsivevoice": "^0.2.1",
     "tableau-api": "^2.1.3",
     "underscore": "^1.8.3"
   },
