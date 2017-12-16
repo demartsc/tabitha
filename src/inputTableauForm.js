@@ -45,12 +45,12 @@ class InputTableau extends React.Component {
     this.pubSheets = null;
 
     //send functions to listener
-    this.listenFunctions = {
-      activate: this.tabithaActivate,
-      change: this.tabithaChange,
-      select: this.tabithaSelect,
-      move: this.tabithaMove
-    };
+    this.listenFunctions = [
+      { type: 'activate', func: this.tabithaActivate },
+      { type: 'change', func: this.tabithaChange },
+      { type: 'select', func: this.tabithaSelect },
+      { type: 'switch', func: this.tabithaMove }
+    ];
 
     this.parameters = {
       onstart: this.startTalking,
@@ -91,6 +91,7 @@ class InputTableau extends React.Component {
         caption: this.pubSheets[v].getName(),
         name: this.pubSheets[v].getName(),
         type: 'tab',
+        func: 'switch',
         values: []
       });
     }
@@ -124,6 +125,7 @@ class InputTableau extends React.Component {
             caption: f[j].$caption,
             name: f[j].getFieldName(),
             type: 'filter',
+            func: 'change',
             values: []
           });
         }
@@ -140,6 +142,7 @@ class InputTableau extends React.Component {
           caption: t[j].getName(),
           name: t[j].getName(),
           type: 'parameter',
+          func: 'change',
           values: []
         });
         if (t[j].getName().toUpperCase() === 'DESCRIPTION') {
@@ -224,22 +227,49 @@ class InputTableau extends React.Component {
   tabithaActivate(words) {
     // we only want to start doing something when the phrase tabitha is said
     console.log(words);
-    if (_.indexOf(words, 'TABITHA') >= 0) {
-      for (let k = 0; k < words.length; k++) {
-        if (words[k].toUpperCase() === 'TABITHA') {
-          console.log('tabitha activated');
-          if (words[k + 1] === 'CHANGE') {
-            // left off here, we need to call functions based on submitted
-            //if we are on change we either call parm or filter based on type
-            // need to figure out how we are going to handle multi word fields
-          } else if (words[k + 1] === 'SELECT') {
-            this.tabithaSelect(words, k);
-          } else if (words[k + 1] === 'MOVE') {
-            this.tabithaMove(words, k);
-          } else {
-            console.log('tabitha not activated, invalid ask');
+    let idxTabitha = _.indexOf(words, 'TABITHA');
+    let idxFunc = -1; // probably a better way to do this
+    let idxObj = -1; // probably a better way to do this
+    if (idxTabitha >= 0) {
+      // tabitha was said
+      for (let k = 0; k < this.listenFunctions.length; k++) {
+        if (
+          words[idxTabitha + 1] === this.listenFunctions[k].type.toUpperCase()
+        ) {
+          // function was triggered
+          idxFunc = k;
+          break;
+        }
+      }
+      if (idxFunc >= 0) {
+        // we have a match on the function
+        for (let l = 0; l < this.vizActions.length; l++) {
+          if (
+            this.listenFunctions[idxFunc].type.toUpperCase() ===
+              this.vizActions[l].func.toUpperCase() &&
+            (words[idxTabitha + 2] ===
+              this.vizActions[l].caption.toUpperCase() ||
+              words[idxTabitha + 2] === this.vizActions[l].name.toUpperCase() ||
+              (words[idxTabitha + 2] + words[idxTabitha + 3] ===
+                this.vizActions[l].caption.toUpperCase().replace(' ', '') ||
+                words[idxTabitha + 2] + words[idxTabitha + 3] ===
+                  this.vizActions[l].name.toUpperCase().replace(' ', '')) ||
+              (words[idxTabitha + 3] ===
+                this.vizActions[l].caption.toUpperCase() ||
+                words[idxTabitha + 3] ===
+                  this.vizActions[l].name.toUpperCase()))
+          ) {
+            idxObj = l;
+            break;
           }
         }
+        if (idxObj >= 0) {
+          console.log('made it all the way');
+        } else {
+          console.log('requested tableau object not found');
+        }
+      } else {
+        console.log('requested action/func not found');
       }
     } else {
       console.log('tabitha not found');

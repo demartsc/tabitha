@@ -16,7 +16,7 @@ class Dictaphone extends React.Component {
       //split the words into array for easier analysis
       var words = nextProps.finalTranscript.toUpperCase().split(' ');
       //console.log(words);
-      this.props.onListen['activate'](words);
+      this.props.onListen[0].func(words);
 
       //now check if any words match our function array
       for (let w = 0; w < words.length; w++) {
@@ -81,7 +81,7 @@ Dictaphone.propTypes = {
   browserSupportsSpeechRecognition: PropTypes.bool,
   listenUp: PropTypes.bool,
   viz: PropTypes.object,
-  onListen: PropTypes.object
+  onListen: PropTypes.array
 };
 
 const options = {
