@@ -232,6 +232,7 @@ class InputTableau extends React.Component {
     let idxTabitha = _.indexOf(words, 'TABITHA');
     let idxFunc = -1; // probably a better way to do this
     let idxObj = -1; // probably a better way to do this
+    let idxObjAdd = 0;
     if (idxTabitha >= 0) {
       // tabitha was said
       for (let k = 0; k < this.listenFunctions.length; k++) {
@@ -251,17 +252,23 @@ class InputTableau extends React.Component {
               this.vizActions[l].func.toUpperCase() &&
             (words[idxTabitha + 2] ===
               this.vizActions[l].caption.toUpperCase() ||
-              words[idxTabitha + 2] === this.vizActions[l].name.toUpperCase() ||
+              words[idxTabitha + 2] === this.vizActions[l].name.toUpperCase())
+          ) {
+            idxObj = l;
+            break;
+          } else if (
+            (this.listenFunctions[idxFunc].type.toUpperCase() ===
+              this.vizActions[l].func.toUpperCase() &&
               (words[idxTabitha + 2] + words[idxTabitha + 3] ===
                 this.vizActions[l].caption.toUpperCase().replace(' ', '') ||
                 words[idxTabitha + 2] + words[idxTabitha + 3] ===
-                  this.vizActions[l].name.toUpperCase().replace(' ', '')) ||
-              (words[idxTabitha + 3] ===
-                this.vizActions[l].caption.toUpperCase() ||
-                words[idxTabitha + 3] ===
-                  this.vizActions[l].name.toUpperCase()))
+                  this.vizActions[l].name.toUpperCase().replace(' ', ''))) ||
+            (words[idxTabitha + 3] ===
+              this.vizActions[l].caption.toUpperCase() ||
+              words[idxTabitha + 3] === this.vizActions[l].name.toUpperCase())
           ) {
             idxObj = l;
+            idxObjAdd++;
             break;
           }
         }
@@ -269,10 +276,17 @@ class InputTableau extends React.Component {
           console.log('made it all the way');
           this.listenFunctions[idxFunc].func(
             this.vizActions[idxObj].name,
-            words
+            this.vizActions[idxObj].type,
+            words,
+            idxTabitha + 2 + idxObjAdd
           );
         } else {
-          console.log('requested tableau object not found');
+          this.setState({
+            speakText:
+              "Sorry, I don't see any objects with the name " +
+              words[idxTabitha + 2] +
+              ' in this viz.'
+          });
         }
       } else {
         let funcNames = '';
@@ -310,12 +324,26 @@ class InputTableau extends React.Component {
     });
   }
 
-  tabithaChange(words, k) {
-    console.log('parameter was asked');
-    for (let j = k + 1; j < words.length; j++) {}
+  tabithaChange(nm, typ, words, idxObj) {
+    console.log('in tabitha change', words, idxObj);
     let wrkbk = this.state.viz.getWorkbook();
-    wrkbk.changeParameterValueAsync('K', 8);
-    console.log(wrkbk);
+    let sheet = wrkbk.getActiveSheet();
+    let sheets = sheet.getWorksheets();
+
+    //need to figure out how to grab the correct word / words...
+
+    if (typ === 'parameter') {
+      //if parameter then call change parameter
+      console.log('changing paramter', nm, words[idxObj + 1]);
+      wrkbk.changeParameterValueAsync(nm, words[idxObj + 1]).then(function(p) {
+        console.log('parameter changed', p);
+      });
+    } else if (typ === 'filter') {
+      //if filter then call filter on each sheet
+      for (let y = 0; y < sheets.length; y++) {
+        sheets[y].selectMarksAsync('Index', 100, 'REPLACE');
+      }
+    }
   }
 
   tabithaSelect() {
@@ -326,7 +354,6 @@ class InputTableau extends React.Component {
       .getActiveSheet()
       .getWorksheets();
     for (let y = 0; y < sheets.length; y++) {
-      console.log(sheets[y]);
       sheets[y].selectMarksAsync('Index', 100, 'REPLACE');
     }
     //this needs to be some code that will filter based on command
