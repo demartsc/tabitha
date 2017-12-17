@@ -16,18 +16,11 @@ class Dictaphone extends React.Component {
       //split the words into array for easier analysis
       var words = nextProps.finalTranscript.toUpperCase().split(' ');
       //console.log(words);
-      this.props.onListen[0].func(words);
-
-      //now check if any words match our function array
-      for (let w = 0; w < words.length; w++) {
-        if (words[w] in this.props.onListen) {
-          console.log(
-            'we found ' + words[w] + ':',
-            this.props.onListen[words[w]]
-          );
-          this.props.onListen[words[w]]();
-        }
+      if (words.length > 2) {
+        // only call if we have at least three words
+        this.props.onListen[0].func(words);
       }
+      this.props.resetTranscript();
     }
   }
 

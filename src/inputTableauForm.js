@@ -168,7 +168,8 @@ class InputTableau extends React.Component {
       //use lodash to unique the array object list created (in case there are filters on multiple tabs)
       this.vizActions = _.uniqWith(this.vizActions, _.isEqual);
       this.setState({
-        vizActions: this.vizActions
+        vizActions: this.vizActions,
+        speakText: ''
       });
       //console.log(this.state.vizActions);
       //console.log(t);
@@ -184,7 +185,8 @@ class InputTableau extends React.Component {
       onFirstInteractive: () => {
         this.setState({
           viz: this.viz,
-          interactive: true
+          interactive: true,
+          speakText: ''
         });
         //this.firstInter();
       }
@@ -265,19 +267,47 @@ class InputTableau extends React.Component {
         }
         if (idxObj >= 0) {
           console.log('made it all the way');
+          this.listenFunctions[idxFunc].func(
+            this.vizActions[idxObj].name,
+            words
+          );
         } else {
           console.log('requested tableau object not found');
         }
       } else {
-        console.log('requested action/func not found');
+        let funcNames = '';
+        for (let t = 0; t < this.listenFunctions.length; t++) {
+          if (t === 0) {
+            funcNames = this.listenFunctions[t].type;
+          } else if (t === this.listenFunctions.length - 1) {
+            funcNames = funcNames + ', or ' + this.listenFunctions[t].type;
+          } else {
+            funcNames = funcNames + ', ' + this.listenFunctions[t].type;
+          }
+        }
+        this.setState({
+          speakText:
+            "I don't appear to have a command that matches that, try " +
+            funcNames
+        });
       }
     } else {
-      console.log('tabitha not found');
+      this.setState({
+        speakText:
+          'If you want to get my attention make sure to start with my name... Tabitha'
+      });
     }
   }
 
-  tabithaMove() {
-    console.log('in tabitha move');
+  tabithaMove(nm) {
+    console.log('in tabitha move', nm);
+    let wrkbk = this.state.viz.getWorkbook();
+    wrkbk.activateSheetAsync(nm).then(function(t) {
+      console.log('sheet activated', t);
+    });
+    this.setState({
+      speakText: 'Switching tabs to ' + nm + ' now'
+    });
   }
 
   tabithaChange(words, k) {
@@ -362,7 +392,6 @@ class InputTableau extends React.Component {
     return (
       <div className="tabithaRootDiv">
         <button onClick={this.toggleButton}>{this.state.button}</button>
-        <button onClick={this.resetTranscript}>Reset Dictation</button>
         <input
           onChange={this.handleInputChange}
           placeholder="Input Tableau Public URL"
