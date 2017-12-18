@@ -9,6 +9,19 @@ class Dictaphone extends React.Component {
     super(props);
   }
 
+  // componentWillMount() {
+  //   this.props.abortListening(); // call this in will mount to turn of listening at first
+  // }
+
+  componentDidMount() {
+    console.log('listener', this.props.listenUp);
+    if (this.props.listenUp) {
+      this.props.startListening();
+    } else {
+      this.props.abortListening();
+    }
+  }
+
   componentWillUpdate(nextProps) {
     if (this.props.finalTranscript != nextProps.finalTranscript) {
       console.log('finalTranscript updated', nextProps.finalTranscript);
@@ -21,7 +34,7 @@ class Dictaphone extends React.Component {
       //console.log(words);
       if (words.length > 2) {
         // only call if we have at least three words
-        this.props.onListen[0].func(words);
+        this.props.onListen[0].func(words); // default to the first function for now...
       }
       this.props.resetTranscript();
     }
@@ -29,52 +42,29 @@ class Dictaphone extends React.Component {
 
   render() {
     const {
-      transcript,
-      interimTranscript,
       finalTranscript,
-      resetTranscript,
       browserSupportsSpeechRecognition,
       viz,
       listenUp,
-      onListen,
-      interactive,
-      resetDication
+      startListening,
+      abortListening,
+      interactive
     } = this.props;
 
     if (!browserSupportsSpeechRecognition) {
       return null;
     }
 
-    //this does not work yet
-    if (resetDication) {
-      console.log('resetting');
-      resetTranscript();
-    }
-
-    if (!listenUp) {
-      return null;
-    } else {
-      //console.log(this.props);
-      if (viz && interactive) {
-        //console.log(viz);
-        //console.log(viz.getWorkbook().changeParameterValueAsync('K', 10));
-        //console.log(viz.getWorkbook().changeParameterValueAsync('Point Density', 500));
-      }
-
-      return (
-        <div>
-          <span>{finalTranscript}</span>
-        </div>
-      );
-    }
+    return (
+      <div>
+        <span>{finalTranscript}</span>
+      </div>
+    );
   }
 }
 
 Dictaphone.propTypes = {
   // Props injected by SpeechRecognition
-  transcript: PropTypes.string,
-  resetTranscript: PropTypes.func,
-  browserSupportsSpeechRecognition: PropTypes.bool,
   listenUp: PropTypes.bool,
   viz: PropTypes.object,
   onListen: PropTypes.array
@@ -82,7 +72,7 @@ Dictaphone.propTypes = {
 
 const options = {
   autoStart: true,
-  listenUp: false
+  listenUp: true
 };
 
 export default SpeechRecognition(options)(Dictaphone);

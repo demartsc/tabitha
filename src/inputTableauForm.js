@@ -10,16 +10,14 @@ class InputTableau extends React.Component {
     super(props);
     this.state = {
       url: this.props.url,
-      speakText:
-        'Hi! I am Tabitha. Enter the URL for your visualization below. Then I will learn all about it.',
+      speakText: '',
       voice: 'UK English Female',
       viz: null,
       vizActions: [],
       interactive: false,
-      listenUp: false,
+      listenUp: true,
       button: 'start',
-      description: false,
-      resetDication: false
+      description: false
     };
 
     this.toggleButton = this.toggleButton.bind(this);
@@ -30,7 +28,6 @@ class InputTableau extends React.Component {
 
     this.startTalking = this.startTalking.bind(this);
     this.doneTalking = this.doneTalking.bind(this);
-    this.resetTranscript = this.resetTranscript.bind(this);
 
     this.tabithaActivate = this.tabithaActivate.bind(this);
     this.tabithaChange = this.tabithaChange.bind(this);
@@ -216,17 +213,20 @@ class InputTableau extends React.Component {
   }
 
   startTalking() {
+    // when we start talking ... we stop listening
     console.log('succesfully event listened for start of speech');
+    // this.setState({
+    //   listenUp: false
+    // });
   }
 
   doneTalking() {
+    // when we stop talking ... we start listening
     console.log('succesfully event listened for end of speech');
-  }
-
-  resetTranscript() {
-    this.setState({
-      resetDication: true
-    });
+    // this.setState({
+    //   speakText: "",
+    //   listenUp: true
+    // });
   }
 
   tabithaActivate(words) {
@@ -276,7 +276,6 @@ class InputTableau extends React.Component {
           }
         }
         if (idxObj >= 0) {
-          console.log('made it all the way');
           this.listenFunctions[idxFunc].func(
             this.vizActions[idxObj].actName,
             this.vizActions[idxObj].name,
@@ -294,7 +293,8 @@ class InputTableau extends React.Component {
         }
       } else {
         let funcNames = '';
-        for (let t = 0; t < this.listenFunctions.length; t++) {
+        for (let t = 1; t < this.listenFunctions.length; t++) {
+          // starting at 1 to ignore the activate function
           if (t === 0) {
             funcNames = this.listenFunctions[t].type;
           } else if (t === this.listenFunctions.length - 1) {
@@ -410,6 +410,13 @@ class InputTableau extends React.Component {
   }
 
   componentDidMount() {
+    setTimeout(() => {
+      // set slight timeout to allow voices to load before we trigger intro
+      this.setState({
+        speakText:
+          'Hi! I am Tabitha. Enter the URL for your visualization below. Then I will learn all about it.'
+      });
+    }, 250);
     this.initTableau(); // we are just using state, so don't need to pass anything
   }
 
@@ -453,11 +460,11 @@ class InputTableau extends React.Component {
         <SpeechRecognition
           autoStart
           continuous
-          listenUp
-          lang="en-IN"
+          lang="en-US"
+          listenUp={this.state.listenUp}
           viz={this.state.viz}
-          onListen={this.listenFunctions} //test this with filter first
           interactive={this.state.interactive}
+          onListen={this.listenFunctions}
         />
         <br />
         <div
