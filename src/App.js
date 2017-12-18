@@ -10,7 +10,7 @@ class App extends React.Component {
 
     this.state = {
       url:
-        'https://public.tableau.com/views/TableauRosePetals/TableauRose?:embed=y&:display_count=yes',
+        'https://public.tableau.com/views/StarWords/StarWords?:embed=y&:display_count=yes&publish=yes',
       paramNames: [],
       paramData: {},
       isLoading: true

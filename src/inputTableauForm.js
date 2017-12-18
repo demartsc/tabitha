@@ -17,7 +17,8 @@ class InputTableau extends React.Component {
       interactive: false,
       listenUp: true,
       button: 'start',
-      description: false
+      description: false,
+      selectParm: null
     };
 
     this.toggleButton = this.toggleButton.bind(this);
@@ -62,7 +63,6 @@ class InputTableau extends React.Component {
     const sheets = activeSheet.getWorksheets();
     const name = wrkbk.getName();
     const objs = activeSheet.getObjects();
-    const filters = [];
 
     // need to check what happens with automatic sized workbooks...
     //console.log(activeSheet.getSize());
@@ -116,9 +116,9 @@ class InputTableau extends React.Component {
 
     // we may not even need this as get objects will return the filters if they are visible.
     for (let i = 0; i < sheets.length; i++) {
+      // get filters and save objects for change command
       sheets[i].getFiltersAsync().then(f => {
         for (let j = 0; j < f.length; j++) {
-          filters.push(f[j]); // this saves all filters (even duplicates across sheets) into an array
           this.vizActions.push({
             caption: f[j].$caption.replace(/[^\w\s]/gi, ''),
             name: f[j].getFieldName().replace(/[^\w\s]/gi, ''),
@@ -132,9 +132,20 @@ class InputTableau extends React.Component {
     }
 
     wrkbk.getParametersAsync().then(t => {
-      this.setState({
-        speakText: 'It appears to have ' + t.length.toString() + ' parameters.'
-      });
+      if (t.legnth === 0) {
+        this.setState({
+          speakText: 'It appears to have no parameters.'
+        });
+      } else if (t.length === 1) {
+        this.setState({
+          speakText: 'It appears to have ' + t.length.toString() + ' parameter.'
+        });
+      } else {
+        this.setState({
+          speakText:
+            'It appears to have ' + t.length.toString() + ' parameters.'
+        });
+      }
       // if the user has provided the description parameter this will read it back to the user, otherwise it will do nothing.
       for (let j = 0; j < t.length; j++) {
         this.vizActions.push({
@@ -153,17 +164,71 @@ class InputTableau extends React.Component {
           this.setState({
             speakText: t[j].getCurrentValue().formattedValue.toString()
           });
+          // this.setState({ // this may not be needed yet.
+          //   speakText: '',
+          //   listenUp: true
+          // });
+        }
+        // if we have been provided a select configuration go get the info
+        if (t[j].getName().toUpperCase() === 'SELECT CONFIGURATION') {
           this.setState({
             speakText: '',
-            listenUp: true
+            selectParm: t[j]
           });
         }
       }
+
       if (this.state.description === false) {
         this.setState({
           speakText:
             'Unfortunately, the author has not provided a description for us.'
         });
+      }
+
+      if (this.state.selectParm) {
+        let selectVals = [];
+        let colIdx = -1;
+        //for each value provided in config, get sheet and then data values, summary data only
+        selectVals = this.state.selectParm.getAllowableValues();
+        console.log(selectVals);
+        //console.log(this.state.selectParm.getAllowableValues()); // this returns all sheet/field pairs
+        // get summary data and save values for select commands
+        for (let v = 0; v < selectVals.length; v++) {
+          console.log('made it');
+          console.log(sheets.get(selectVals[v].value));
+          sheets
+            .get(selectVals[v].value)
+            .getSummaryDataAsync()
+            .then(d => {
+              for (let c = 0; c < d.getColumns().length; c++) {
+                if (
+                  d.getColumns()[c].getFieldName() ===
+                  selectVals[v].formattedValue
+                ) {
+                  colIdx = d.getColumns()[c].getIndex();
+                  console.log(colIdx);
+                  break;
+                }
+              }
+              if (colIdx >= 0) {
+                for (let c = 0; c < d.getData().length; c++) {
+                  this.vizActions.push({
+                    caption: d
+                      .getData()
+                      [c][colIdx].formattedValue.replace(/[^\w\s]/gi, ''),
+                    name: d.getData()[c][colIdx].value.replace(/[^\w\s]/gi, ''),
+                    actName: d.getData()[c][colIdx].value,
+                    type: 'mark',
+                    func: 'select',
+                    values: []
+                  });
+                }
+              }
+              // for (let c = 0; c < d.getColumns().length; c++) {
+              //   console.log('columns', d.getColumns()[c].getFieldName(), d.getColumns()[c].getIndex());
+              // }
+            });
+        }
       }
       //use lodash to unique the array object list created (in case there are filters on multiple tabs)
       this.vizActions = _.uniqWith(this.vizActions, _.isEqual);
