@@ -88,8 +88,9 @@ class InputTableau extends React.Component {
     this.vizActions = [];
     for (let v = 0; v < this.pubSheets.length; v++) {
       this.vizActions.push({
-        caption: this.pubSheets[v].getName(),
-        name: this.pubSheets[v].getName(),
+        caption: this.pubSheets[v].getName().replace(/[^\w\s]/gi, ''),
+        name: this.pubSheets[v].getName().replace(/[^\w\s]/gi, ''),
+        actName: this.pubSheets[v].getName(),
         type: 'tab',
         func: 'switch',
         values: []
@@ -122,8 +123,9 @@ class InputTableau extends React.Component {
         for (let j = 0; j < f.length; j++) {
           filters.push(f[j]); // this saves all filters (even duplicates across sheets) into an array
           this.vizActions.push({
-            caption: f[j].$caption,
-            name: f[j].getFieldName(),
+            caption: f[j].$caption.replace(/[^\w\s]/gi, ''),
+            name: f[j].getFieldName().replace(/[^\w\s]/gi, ''),
+            actName: f[j].getFieldName(),
             type: 'filter',
             func: 'change',
             values: []
@@ -139,8 +141,9 @@ class InputTableau extends React.Component {
       // if the user has provided the description parameter this will read it back to the user, otherwise it will do nothing.
       for (let j = 0; j < t.length; j++) {
         this.vizActions.push({
-          caption: t[j].getName(),
-          name: t[j].getName(),
+          caption: t[j].getName().replace(/[^\w\s]/gi, ''),
+          name: t[j].getName().replace(/[^\w\s]/gi, ''),
+          actName: t[j].getName(),
           type: 'parameter',
           func: 'change',
           values: []
@@ -275,6 +278,7 @@ class InputTableau extends React.Component {
         if (idxObj >= 0) {
           console.log('made it all the way');
           this.listenFunctions[idxFunc].func(
+            this.vizActions[idxObj].actName,
             this.vizActions[idxObj].name,
             this.vizActions[idxObj].type,
             words,
@@ -313,10 +317,10 @@ class InputTableau extends React.Component {
     }
   }
 
-  tabithaMove(nm) {
+  tabithaMove(actNm, nm) {
     console.log('in tabitha move', nm);
     let wrkbk = this.state.viz.getWorkbook();
-    wrkbk.activateSheetAsync(nm).then(function(t) {
+    wrkbk.activateSheetAsync(actNm).then(function(t) {
       console.log('sheet activated', t);
     });
     this.setState({
@@ -324,7 +328,7 @@ class InputTableau extends React.Component {
     });
   }
 
-  tabithaChange(nm, typ, words, idxObj) {
+  tabithaChange(actNm, nm, typ, words, idxObj) {
     console.log('in tabitha change', words, idxObj);
     let wrkbk = this.state.viz.getWorkbook();
     let sheet = wrkbk.getActiveSheet();
@@ -335,13 +339,31 @@ class InputTableau extends React.Component {
     if (typ === 'parameter') {
       //if parameter then call change parameter
       console.log('changing paramter', nm, words[idxObj + 1]);
-      wrkbk.changeParameterValueAsync(nm, words[idxObj + 1]).then(function(p) {
-        console.log('parameter changed', p);
+      wrkbk.changeParameterValueAsync(actNm, words[idxObj + 1]).then(
+        function(p) {
+          console.log('parameter changed', p);
+        },
+        function(err) {
+          console.log(err);
+        }
+      );
+      this.setState({
+        speakText: 'Changing parameter ' + nm + ' to ' + words[idxObj + 1]
       });
     } else if (typ === 'filter') {
       //if filter then call filter on each sheet
       for (let y = 0; y < sheets.length; y++) {
-        sheets[y].selectMarksAsync('Index', 100, 'REPLACE');
+        sheets[y].applyFilterAsync(actNm, words[idxObj + 1], 'REPLACE').then(
+          function(f) {
+            console.log('filter changed', f);
+          },
+          function(err) {
+            console.log(err);
+          }
+        );
+        this.setState({
+          speakText: 'Changing filter ' + nm + ' to ' + words[idxObj + 1]
+        });
       }
     }
   }

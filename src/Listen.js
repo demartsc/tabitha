@@ -14,7 +14,10 @@ class Dictaphone extends React.Component {
       console.log('finalTranscript updated', nextProps.finalTranscript);
 
       //split the words into array for easier analysis
-      var words = nextProps.finalTranscript.toUpperCase().split(' ');
+      var words = nextProps.finalTranscript
+        .toUpperCase()
+        .replace(/[^\w\s]/gi, '')
+        .split(' ');
       //console.log(words);
       if (words.length > 2) {
         // only call if we have at least three words
