@@ -90,6 +90,7 @@ class InputTableau extends React.Component {
         actName: this.pubSheets[v].getName(),
         type: 'tab',
         func: 'switch',
+        field: '',
         values: []
       });
     }
@@ -125,6 +126,7 @@ class InputTableau extends React.Component {
             actName: f[j].getFieldName(),
             type: 'filter',
             func: 'change',
+            field: '',
             values: []
           });
         }
@@ -154,6 +156,7 @@ class InputTableau extends React.Component {
           actName: t[j].getName(),
           type: 'parameter',
           func: 'change',
+          field: '',
           values: []
         });
         if (t[j].getName().toUpperCase() === 'DESCRIPTION') {
@@ -190,12 +193,9 @@ class InputTableau extends React.Component {
         let colIdx = -1;
         //for each value provided in config, get sheet and then data values, summary data only
         selectVals = this.state.selectParm.getAllowableValues();
-        console.log(selectVals);
         //console.log(this.state.selectParm.getAllowableValues()); // this returns all sheet/field pairs
         // get summary data and save values for select commands
         for (let v = 0; v < selectVals.length; v++) {
-          console.log('made it');
-          console.log(sheets.get(selectVals[v].value));
           sheets
             .get(selectVals[v].value)
             .getSummaryDataAsync()
@@ -206,7 +206,7 @@ class InputTableau extends React.Component {
                   selectVals[v].formattedValue
                 ) {
                   colIdx = d.getColumns()[c].getIndex();
-                  console.log(colIdx);
+                  //console.log(colIdx);
                   break;
                 }
               }
@@ -220,13 +220,12 @@ class InputTableau extends React.Component {
                     actName: d.getData()[c][colIdx].value,
                     type: 'mark',
                     func: 'select',
+                    field: d.getColumns()[colIdx].getFieldName(),
                     values: []
                   });
                 }
               }
-              // for (let c = 0; c < d.getColumns().length; c++) {
-              //   console.log('columns', d.getColumns()[c].getFieldName(), d.getColumns()[c].getIndex());
-              // }
+              //console.log(this.vizActions);
             });
         }
       }
@@ -345,6 +344,7 @@ class InputTableau extends React.Component {
             this.vizActions[idxObj].actName,
             this.vizActions[idxObj].name,
             this.vizActions[idxObj].type,
+            this.vizActions[idxObj].field,
             words,
             idxTabitha + 2 + idxObjAdd
           );
@@ -382,7 +382,7 @@ class InputTableau extends React.Component {
     }
   }
 
-  tabithaMove(actNm, nm) {
+  tabithaMove(actNm, nm, typ, fld, words, idxObj) {
     console.log('in tabitha move', nm);
     let wrkbk = this.state.viz.getWorkbook();
     wrkbk.activateSheetAsync(actNm).then(function(t) {
@@ -393,7 +393,7 @@ class InputTableau extends React.Component {
     });
   }
 
-  tabithaChange(actNm, nm, typ, words, idxObj) {
+  tabithaChange(actNm, nm, typ, fld, words, idxObj) {
     console.log('in tabitha change', words, idxObj);
     let wrkbk = this.state.viz.getWorkbook();
     let sheet = wrkbk.getActiveSheet();
@@ -433,17 +433,17 @@ class InputTableau extends React.Component {
     }
   }
 
-  tabithaSelect() {
-    console.log('mark was asked');
-    console.log(this.state.viz.getWorkbook().getActiveSheet());
-    let sheets = this.state.viz
-      .getWorkbook()
-      .getActiveSheet()
-      .getWorksheets();
+  tabithaSelect(actNm, nm, typ, fld, words, idxObj) {
+    console.log('in tabitha select', nm, fld);
+    let wrkbk = this.state.viz.getWorkbook();
+    let sheets = wrkbk.getActiveSheet().getWorksheets();
     for (let y = 0; y < sheets.length; y++) {
-      sheets[y].selectMarksAsync('Index', 100, 'REPLACE');
+      // loop through sheets to select mark
+      sheets[y].selectMarksAsync(fld, actNm, 'REPLACE');
     }
-    //this needs to be some code that will filter based on command
+    this.setState({
+      speakText: 'Selecting value ' + nm + ' in field ' + fld + ' now.'
+    });
   }
 
   handleInputChange(event) {
