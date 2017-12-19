@@ -57,7 +57,6 @@ class InputTableau extends React.Component {
   }
 
   firstInter() {
-    //console.log('in Tableau', this.viz);
     const wrkbk = this.viz.getWorkbook();
     const activeSheet = this.viz.getWorkbook().getActiveSheet();
     const sheets = activeSheet.getWorksheets();
@@ -193,7 +192,6 @@ class InputTableau extends React.Component {
         let colIdx = -1;
         //for each value provided in config, get sheet and then data values, summary data only
         selectVals = this.state.selectParm.getAllowableValues();
-        //console.log(this.state.selectParm.getAllowableValues()); // this returns all sheet/field pairs
         // get summary data and save values for select commands
         for (let v = 0; v < selectVals.length; v++) {
           sheets
@@ -206,7 +204,6 @@ class InputTableau extends React.Component {
                   selectVals[v].formattedValue
                 ) {
                   colIdx = d.getColumns()[c].getIndex();
-                  //console.log(colIdx);
                   break;
                 }
               }
@@ -225,7 +222,6 @@ class InputTableau extends React.Component {
                   });
                 }
               }
-              //console.log(this.vizActions);
             });
         }
       }
@@ -235,8 +231,6 @@ class InputTableau extends React.Component {
         vizActions: this.vizActions,
         speakText: ''
       });
-      //console.log(this.state.vizActions);
-      //console.log(t);
     });
   }
 
@@ -487,7 +481,6 @@ class InputTableau extends React.Component {
 
   // one problem is that we are changing state a lot we only want this to be called on viz update.
   componentDidUpdate(prevProps, prevState) {
-    //console.log('updated');
     if (prevState.url !== this.state.url) {
       this.initTableau(); // we are just using state, so don't need to pass anything
     }
@@ -499,8 +492,6 @@ class InputTableau extends React.Component {
   }
 
   componentWillUpdate(nextProps, nextState) {
-    //console.log('will update', this.state, nextState); // error checking to remove
-
     //if we have a new viz we need to dispose of the existing one
     if (this.state.viz && nextState.url !== this.state.url) {
       this.state.viz.dispose();
@@ -508,8 +499,6 @@ class InputTableau extends React.Component {
   }
 
   render() {
-    //console.log(this.state);
-
     return (
       <div className="tabithaRootDiv">
         <button onClick={this.toggleButton}>{this.state.button}</button>
