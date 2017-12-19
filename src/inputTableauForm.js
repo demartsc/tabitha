@@ -190,6 +190,7 @@ class InputTableau extends React.Component {
       if (this.state.selectParm) {
         let selectVals = [];
         let colIdx = -1;
+
         //for each value provided in config, get sheet and then data values, summary data only
         selectVals = this.state.selectParm.getAllowableValues();
         // get summary data and save values for select commands
@@ -225,7 +226,7 @@ class InputTableau extends React.Component {
             });
         }
       }
-      //use lodash to unique the array object list created (in case there are filters on multiple tabs)
+      //use lodash to unique the array object list created (in case there are filters on multiple tabs, or repeated marks)
       this.vizActions = _.uniqWith(this.vizActions, _.isEqual);
       this.setState({
         vizActions: this.vizActions,
@@ -321,14 +322,45 @@ class InputTableau extends React.Component {
             (this.listenFunctions[idxFunc].type.toUpperCase() ===
               this.vizActions[l].func.toUpperCase() &&
               (words[idxTabitha + 2] + words[idxTabitha + 3] ===
-                this.vizActions[l].caption.toUpperCase().replace(' ', '') ||
+                this.vizActions[l].caption
+                  .toUpperCase()
+                  .replace(' ', '')
+                  .replace(' ', '') ||
                 words[idxTabitha + 2] + words[idxTabitha + 3] ===
-                  this.vizActions[l].name.toUpperCase().replace(' ', ''))) ||
+                  this.vizActions[l].name
+                    .toUpperCase()
+                    .replace(' ', '')
+                    .replace(' ', ''))) ||
             (words[idxTabitha + 3] ===
               this.vizActions[l].caption.toUpperCase() ||
               words[idxTabitha + 3] === this.vizActions[l].name.toUpperCase())
           ) {
             idxObj = l;
+            idxObjAdd++;
+            break;
+          } else if (
+            (this.listenFunctions[idxFunc].type.toUpperCase() ===
+              this.vizActions[l].func.toUpperCase() &&
+              (words[idxTabitha + 2] +
+                words[idxTabitha + 3] +
+                words[idxTabitha + 4] ===
+                this.vizActions[l].caption
+                  .toUpperCase()
+                  .replace(' ', '')
+                  .replace(' ', '') ||
+                words[idxTabitha + 2] +
+                  words[idxTabitha + 3] +
+                  words[idxTabitha + 4] ===
+                  this.vizActions[l].name
+                    .toUpperCase()
+                    .replace(' ', '')
+                    .replace(' ', ''))) ||
+            (words[idxTabitha + 4] ===
+              this.vizActions[l].caption.toUpperCase() ||
+              words[idxTabitha + 4] === this.vizActions[l].name.toUpperCase())
+          ) {
+            idxObj = l;
+            idxObjAdd++;
             idxObjAdd++;
             break;
           }
@@ -436,7 +468,7 @@ class InputTableau extends React.Component {
       sheets[y].selectMarksAsync(fld, actNm, 'REPLACE');
     }
     this.setState({
-      speakText: 'Selecting value ' + nm + ' in field ' + fld + ' now.'
+      speakText: 'Selecting ' + fld + ' ' + nm + ' now.'
     });
   }
 
