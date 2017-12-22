@@ -10,9 +10,7 @@ class App extends React.Component {
 
     this.state = {
       url:
-        'https://public.tableau.com/views/TableauRosePetals/TableauRose?:embed=y&:display_count=yes',
-      speakText:
-        'Hi! I am Tabitha. Enter the URL for your visualization below. Then I will learn all about it.',
+        'https://public.tableau.com/views/StarWords/StarWords?:embed=y&:display_count=yes&publish=yes',
       paramNames: [],
       paramData: {},
       isLoading: true
@@ -29,11 +27,33 @@ class App extends React.Component {
           <h2>Tabitha: Powered by React + JS + Tableau</h2>
         </div>
         <br />
-        <InputTableau
-          className="App-input"
-          url={this.state.url}
-          speakText={this.state.speakText}
-        />
+        <InputTableau className="App-input" url={this.state.url} />
+        <br />
+        <p>
+          {' '}
+          Created by{' '}
+          <a href="https://twitter.com/demartsc?lang=en">
+            Chris DeMartini
+          </a>, <a href="https://twitter.com/highvizability">
+            Jeffrey Shaffer
+          </a>{' '}
+          and{' '}
+          <a href="https://twitter.com/sock1ttoomey?lang=en">
+            Chris Toomey
+          </a>{' '}
+        </p>
+        <p>
+          {' '}
+          <a href="https://www.dataplusscience.com/Tabitha.html">
+            Original Tabitha Post
+          </a>{' '}
+          by Jeffrey Shaffer{' '}
+        </p>
+        <p>
+          {' '}
+          Need to add the attribution to responsive voice non-commercial license
+          here{' '}
+        </p>
       </div>
     );
   }

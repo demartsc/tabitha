@@ -5,41 +5,37 @@ import responsiveVoice from 'responsivevoice';
 class Speak extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      loading: true
-    };
+
     this.talk = this.talk.bind(this);
   }
 
-  talk() {
-    console.log(this.props);
-    window.speak(this.props.text, this.props.voice);
+  talk(text, voice, parameters) {
+    console.log('speak.js', text, parameters);
+    window.speak(text, voice, parameters);
   }
 
-  //left off here, the issue is that the state is set before the voices are mapped
-  componentDidMount() {
-    var that = this;
-    setTimeout(function() {
-      that.setState({ loading: false });
-      console.log('timeout happened');
-    }, 1000);
+  componentWillUpdate(nextProps, nextState) {
+    if (this.props.text !== nextProps.text) {
+      this.talk(nextProps.text, nextProps.voice, nextProps.parameters);
+    }
   }
 
   render() {
-    return <div className="speakingDiv">{this.talk()}</div>;
+    return <div className="speakingDiv" />;
   }
 }
 
 Speak.PropTypes = {
-  text: React.PropTypes.string.isRequired,
-  voice: React.PropTypes.string.isRequired,
-  loading: React.PropTypes.bool
+  text: PropTypes.string.isRequired,
+  voice: PropTypes.string.isRequired,
+  parameters: PropTypes.object,
+  interactive: PropTypes.bool.isRequired
 };
 
 Speak.defaultProps = {
   text: 'default text',
   voice: 'UK English Female',
-  loading: false
+  interactive: false
 };
 
 export default Speak;
