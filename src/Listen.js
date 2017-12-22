@@ -13,30 +13,38 @@ class Dictaphone extends React.Component {
   //   this.props.abortListening(); // call this in will mount to turn of listening at first
   // }
 
-  componentDidMount() {
-    console.log('listener', this.props.listenUp);
-    if (this.props.listenUp) {
-      this.props.startListening();
-    } else {
-      this.props.abortListening();
-    }
-  }
+  // componentDidMount() {
+  //   //console.log('listener', this.props.listenUp);
+  //   if (this.props.listenUp) {
+  //     this.props.startListening();
+  //   } else {
+  //     this.props.abortListening();
+  //   }
+  // }
 
   componentWillUpdate(nextProps) {
-    if (this.props.finalTranscript != nextProps.finalTranscript) {
-      console.log('finalTranscript updated', nextProps.finalTranscript);
+    if (this.props.finalTranscript !== nextProps.finalTranscript) {
+      console.log(
+        'finalTranscript updated',
+        nextProps.finalTranscript,
+        nextProps.listenUp
+      );
 
-      //split the words into array for easier analysis
-      var words = nextProps.finalTranscript
-        .toUpperCase()
-        .replace(/[^\w\s]/gi, '')
-        .split(' ');
-      //console.log(words);
-      if (words.length > 2) {
-        // only call if we have at least three words
-        this.props.onListen[0].func(words); // default to the first function for now...
+      if (nextProps.listenUp) {
+        //split the words into array for easier analysis
+        var words = nextProps.finalTranscript
+          .toUpperCase()
+          .replace(/[^\w\s]/gi, '')
+          .split(' ');
+        //console.log(words);
+        if (words.length > 2) {
+          // only call if we have at least three words
+          this.props.onListen[0].func(words); // default to the first function for now...
+        }
+        this.props.resetTranscript();
+      } else {
+        this.props.resetTranscript();
       }
-      this.props.resetTranscript();
     }
   }
 
@@ -55,11 +63,7 @@ class Dictaphone extends React.Component {
       return null;
     }
 
-    return (
-      <div>
-        <span>{finalTranscript}</span>
-      </div>
-    );
+    return <div className="listenDiv" />;
   }
 }
 

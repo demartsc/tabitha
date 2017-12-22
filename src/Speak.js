@@ -9,13 +9,19 @@ class Speak extends React.Component {
     this.talk = this.talk.bind(this);
   }
 
-  talk() {
-    console.log('speak.js', this.props, this.props.parameters);
-    window.speak(this.props.text, this.props.voice, this.props.parameters);
+  talk(text, voice, parameters) {
+    console.log('speak.js', text, parameters);
+    window.speak(text, voice, parameters);
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    if (this.props.text !== nextProps.text) {
+      this.talk(nextProps.text, nextProps.voice, nextProps.parameters);
+    }
   }
 
   render() {
-    return <div className="speakingDiv">{this.talk()}</div>;
+    return <div className="speakingDiv" />;
   }
 }
 

@@ -16,7 +16,7 @@ class InputTableau extends React.Component {
       vizActions: [],
       interactive: false,
       listenUp: true,
-      button: 'start',
+      button: 'listening',
       description: false,
       selectParm: null
     };
@@ -27,7 +27,6 @@ class InputTableau extends React.Component {
     this.initTableau = this.initTableau.bind(this);
     this.firstInter = this.firstInter.bind(this);
 
-    this.startTalking = this.startTalking.bind(this);
     this.doneTalking = this.doneTalking.bind(this);
 
     this.tabithaActivate = this.tabithaActivate.bind(this);
@@ -51,7 +50,6 @@ class InputTableau extends React.Component {
     ];
 
     this.parameters = {
-      onstart: this.startTalking,
       onend: this.doneTalking
     };
   }
@@ -101,7 +99,9 @@ class InputTableau extends React.Component {
           name +
           ' and has ' +
           this.pubSheets.length.toString() +
-          ' sheet published.'
+          ' sheet published.',
+        listenUp: false,
+        button: 'not listening'
       });
     } else {
       this.setState({
@@ -110,7 +110,9 @@ class InputTableau extends React.Component {
           name +
           ' and has ' +
           this.pubSheets.length.toString() +
-          ' sheets published.'
+          ' sheets published.',
+        listenUp: false,
+        button: 'not listening'
       });
     }
 
@@ -135,16 +137,23 @@ class InputTableau extends React.Component {
     wrkbk.getParametersAsync().then(t => {
       if (t.legnth === 0) {
         this.setState({
-          speakText: 'It appears to have no parameters.'
+          speakText: 'It appears to have no parameters.',
+          listenUp: false,
+          button: 'not listening'
         });
       } else if (t.length === 1) {
         this.setState({
-          speakText: 'It appears to have ' + t.length.toString() + ' parameter.'
+          speakText:
+            'It appears to have ' + t.length.toString() + ' parameter.',
+          listenUp: false,
+          button: 'not listening'
         });
       } else {
         this.setState({
           speakText:
-            'It appears to have ' + t.length.toString() + ' parameters.'
+            'It appears to have ' + t.length.toString() + ' parameters.',
+          listenUp: false,
+          button: 'not listening'
         });
       }
       // if the user has provided the description parameter this will read it back to the user, otherwise it will do nothing.
@@ -161,20 +170,22 @@ class InputTableau extends React.Component {
         if (t[j].getName().toUpperCase() === 'DESCRIPTION') {
           this.setState({
             description: true,
-            speakText: 'The author has provided the following description. '
+            speakText: 'The author has provided the following description. ',
+            listenUp: false,
+            button: 'not listening'
           });
           this.setState({
-            speakText: t[j].getCurrentValue().formattedValue.toString()
+            speakText: t[j].getCurrentValue().formattedValue.toString(),
+            listenUp: false,
+            button: 'not listening'
           });
           // this.setState({ // this may not be needed yet.
-          //   speakText: '',
           //   listenUp: true
           // });
         }
         // if we have been provided a select configuration go get the info
         if (t[j].getName().toUpperCase() === 'SELECT CONFIGURATION') {
           this.setState({
-            speakText: '',
             selectParm: t[j]
           });
         }
@@ -183,7 +194,9 @@ class InputTableau extends React.Component {
       if (this.state.description === false) {
         this.setState({
           speakText:
-            'Unfortunately, the author has not provided a description for us.'
+            'Unfortunately, the author has not provided a description for us.',
+          listenUp: false,
+          button: 'not listening'
         });
       }
 
@@ -229,8 +242,7 @@ class InputTableau extends React.Component {
       //use lodash to unique the array object list created (in case there are filters on multiple tabs, or repeated marks)
       this.vizActions = _.uniqWith(this.vizActions, _.isEqual);
       this.setState({
-        vizActions: this.vizActions,
-        speakText: ''
+        vizActions: this.vizActions
       });
     });
   }
@@ -244,8 +256,7 @@ class InputTableau extends React.Component {
       onFirstInteractive: () => {
         this.setState({
           viz: this.viz,
-          interactive: true,
-          speakText: ''
+          interactive: true
         });
         //this.firstInter();
       }
@@ -253,39 +264,19 @@ class InputTableau extends React.Component {
 
     //initiate the viz
     this.viz = new window.tableau.Viz(this.container, vizURL, options);
-    // this.setState({
-    //   viz: this.viz,
-    //   speakText: ''
-    // });
-
-    //if changing viz need to wipe out speakText - can possibly remove
-    // if (this.state.speakText === 'Thanks! I am updating your workbook now.') {
-    //   this.setState({
-    //     viz: this.viz,
-    //     speakText: ''
-    //   });
-    // } else {
-    //   this.setState({
-    //     viz: this.viz
-    //   });
-    // }
-  }
-
-  startTalking() {
-    // when we start talking ... we stop listening
-    console.log('succesfully event listened for start of speech');
-    // this.setState({
-    //   listenUp: false
-    // });
   }
 
   doneTalking() {
-    // when we stop talking ... we start listening
-    console.log('succesfully event listened for end of speech');
-    // this.setState({
-    //   speakText: "",
-    //   listenUp: true
-    // });
+    // when we stop talking ... we start listening ... give it a cushion of a second
+    //setTimeout(() => {
+    if (this.state.button === 'not listening') {
+      this.toggleButton();
+    }
+    console.log(
+      'succesfully event listened for end of speech',
+      this.state.listenUp
+    );
+    //}, 1000);
   }
 
   tabithaActivate(words) {
@@ -379,7 +370,9 @@ class InputTableau extends React.Component {
             speakText:
               "Sorry, I don't see any objects with the name " +
               words[idxTabitha + 2] +
-              ' in this viz.'
+              ' in this viz.',
+            listenUp: false,
+            button: 'not listening'
           });
         }
       } else {
@@ -397,13 +390,17 @@ class InputTableau extends React.Component {
         this.setState({
           speakText:
             "I don't appear to have a command that matches that, try " +
-            funcNames
+            funcNames,
+          listenUp: false,
+          button: 'not listening'
         });
       }
     } else {
       this.setState({
         speakText:
-          'If you want to get my attention make sure to start with my name... Tabitha'
+          'If you want to get my attention make sure to start with my name... Tabitha',
+        listenUp: false,
+        button: 'not listening'
       });
     }
   }
@@ -415,7 +412,9 @@ class InputTableau extends React.Component {
       console.log('sheet activated', t);
     });
     this.setState({
-      speakText: 'Switching tabs to ' + nm + ' now'
+      speakText: 'Switching tabs to ' + nm + ' now',
+      listenUp: false,
+      button: 'not listening'
     });
   }
 
@@ -439,7 +438,9 @@ class InputTableau extends React.Component {
         }
       );
       this.setState({
-        speakText: 'Changing parameter ' + nm + ' to ' + words[idxObj + 1]
+        speakText: 'Changing parameter ' + nm + ' to ' + words[idxObj + 1],
+        listenUp: false,
+        button: 'not listening'
       });
     } else if (typ === 'filter') {
       //if filter then call filter on each sheet
@@ -453,7 +454,9 @@ class InputTableau extends React.Component {
           }
         );
         this.setState({
-          speakText: 'Changing filter ' + nm + ' to ' + words[idxObj + 1]
+          speakText: 'Changing filter ' + nm + ' to ' + words[idxObj + 1],
+          listenUp: false,
+          button: 'not listening'
         });
       }
     }
@@ -468,7 +471,9 @@ class InputTableau extends React.Component {
       sheets[y].selectMarksAsync(fld, actNm, 'REPLACE');
     }
     this.setState({
-      speakText: 'Selecting ' + fld + ' ' + nm + ' now.'
+      speakText: 'Selecting ' + fld + ' ' + nm + ' now.',
+      listenUp: false,
+      button: 'not listening'
     });
   }
 
@@ -478,14 +483,14 @@ class InputTableau extends React.Component {
   }
 
   toggleButton() {
-    if (this.state.button === 'start') {
+    if (this.state.button === 'not listening') {
       this.setState({
-        button: 'stop',
+        button: 'listening',
         listenUp: true
       });
     } else {
       this.setState({
-        button: 'start',
+        button: 'not listening',
         listenUp: false
       });
     }
@@ -496,7 +501,9 @@ class InputTableau extends React.Component {
       url: this.tempURL,
       interactive: false,
       speakText: 'Thanks! I am updating your workbook now.',
-      description: false
+      description: false,
+      listenUp: false,
+      button: 'not listening'
     });
   }
 
@@ -505,7 +512,9 @@ class InputTableau extends React.Component {
       // set slight timeout to allow voices to load before we trigger intro
       this.setState({
         speakText:
-          'Hi! I am Tabitha. Enter the URL for your visualization below. Then I will learn all about it.'
+          'Hi! I am Tabitha. Enter the URL for your visualization below. Then I will learn all about it.',
+        listenUp: false,
+        button: 'not listening'
       });
     }, 250);
     this.initTableau(); // we are just using state, so don't need to pass anything
@@ -518,7 +527,7 @@ class InputTableau extends React.Component {
     }
 
     if (this.state.viz && this.state.interactive && !prevState.interactive) {
-      console.log('interactive flipped');
+      //console.log('interactive flipped');
       this.firstInter();
     }
   }
@@ -543,21 +552,12 @@ class InputTableau extends React.Component {
         />
         <button onClick={this.handleButtonClick}>Submit to Tabitha</button>
         <br />
-        <SpeechRecognition
-          autoStart
-          continuous
-          lang="en-US"
-          listenUp={this.state.listenUp}
-          viz={this.state.viz}
-          interactive={this.state.interactive}
-          onListen={this.listenFunctions}
-        />
         <br />
         <div
           id="tableauViz"
           className="tableauContainer"
           ref={c => (this.container = c)}
-          style={{ margin: '0 auto' }}
+          style={{ margin: '0 auto', width: this.width, height: this.height }}
         />
         <Speak
           text={this.state.speakText}
@@ -565,6 +565,18 @@ class InputTableau extends React.Component {
           parameters={this.parameters}
           interactive={this.state.interactive}
         />
+        <SpeechRecognition
+          autoStart
+          continuous
+          lang="en-US"
+          //listenUp={this.state.listenUp ? startListening : abortListening}
+          listenUp={this.state.listenUp}
+          viz={this.state.viz}
+          interactive={this.state.interactive}
+          onListen={this.listenFunctions}
+        />
+        <br />
+        <br />
       </div>
     );
   }
