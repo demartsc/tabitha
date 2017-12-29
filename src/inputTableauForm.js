@@ -511,7 +511,7 @@ class InputTableau extends React.Component {
           description: false,
           listenUp: false,
           button: 'not listening',
-          exampleCount: this.state.exampleCount++
+          exampleCount: this.state.exampleCount + 1
         });
       } else if (this.state.exampleCount === 1) {
         this.setState({
@@ -523,16 +523,47 @@ class InputTableau extends React.Component {
           description: false,
           listenUp: false,
           button: 'not listening',
-          exampleCount: this.state.exampleCount++
+          exampleCount: this.state.exampleCount + 1
         });
-      } else {
-        this.setState({
-          speakText: 'Sorry, I am all out of examples.',
-          description: false,
-          listenUp: false,
-          button: 'not listening',
-          exampleCount: this.state.exampleCount++
-        });
+      } else if (this.state.exampleCount > 1) {
+        let tmp = this.state.exampleCount - 1;
+        if (tmp === 1) {
+          this.setState({
+            speakText:
+              'Sorry, I am all out of examples, for the ' + tmp + 'st time.',
+            description: false,
+            listenUp: false,
+            button: 'not listening',
+            exampleCount: this.state.exampleCount + 1
+          });
+        } else if (tmp === 2) {
+          this.setState({
+            speakText:
+              'Sorry, I am all out of examples, for the ' + tmp + 'nd time.',
+            description: false,
+            listenUp: false,
+            button: 'not listening',
+            exampleCount: this.state.exampleCount + 1
+          });
+        } else if (tmp === 3) {
+          this.setState({
+            speakText:
+              'Sorry, I am all out of examples, for the ' + tmp + 'rd time.',
+            description: false,
+            listenUp: false,
+            button: 'not listening',
+            exampleCount: this.state.exampleCount + 1
+          });
+        } else {
+          this.setState({
+            speakText:
+              'Sorry, I am all out of examples, for the ' + tmp + 'th time.',
+            description: false,
+            listenUp: false,
+            button: 'not listening',
+            exampleCount: this.state.exampleCount + 1
+          });
+        }
       }
     }
   }

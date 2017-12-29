@@ -5,9 +5,9 @@ import Tableau from 'tableau-api';
 
 // source: https://www.npmjs.com/package/react-speech-recognition
 class Dictaphone extends React.Component {
-  constructor(props) {
-    super(props);
-  }
+  // constructor(props) {
+  //   super(props);
+  // }
 
   // componentWillMount() {
   //   this.props.abortListening(); // call this in will mount to turn of listening at first
