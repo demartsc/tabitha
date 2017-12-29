@@ -9,8 +9,8 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-      url:
-        'https://public.tableau.com/views/StarWords/StarWords?:embed=y&:display_count=yes&publish=yes',
+      url: '',
+      //'https://public.tableau.com/views/StarWords/StarWords?:embed=y&:display_count=yes&publish=yes',
       paramNames: [],
       paramData: {},
       isLoading: true
@@ -34,16 +34,10 @@ class App extends React.Component {
           Created by{' '}
           <a href="https://twitter.com/demartsc?lang=en">
             Chris DeMartini
-          </a>, <a href="https://twitter.com/highvizability">
-            Jeffrey Shaffer
-          </a>{' '}
-          and{' '}
-          <a href="https://twitter.com/sock1ttoomey?lang=en">
-            Chris Toomey
           </a>{' '}
         </p>
         <p>
-          {' '}
+          Inspired by{' '}
           <a href="https://www.dataplusscience.com/Tabitha.html">
             Original Tabitha Post
           </a>{' '}

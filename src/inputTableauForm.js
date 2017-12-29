@@ -18,7 +18,8 @@ class InputTableau extends React.Component {
       listenUp: true,
       button: 'listening',
       description: false,
-      selectParm: null
+      selectParm: null,
+      exampleCount: 0
     };
 
     this.toggleButton = this.toggleButton.bind(this);
@@ -33,20 +34,31 @@ class InputTableau extends React.Component {
     this.tabithaChange = this.tabithaChange.bind(this);
     this.tabithaSelect = this.tabithaSelect.bind(this);
     this.tabithaMove = this.tabithaMove.bind(this);
+    this.tabithaExample = this.tabithaExample.bind(this);
 
     this.tempURL = null;
-    this.width = 800; // default, although this gets overwritten in the initTableau function
-    this.height = 800; // default, although this gets overwritten in the initTableau function
+    this.width = 100; // default, although this gets overwritten in the initTableau function
+    this.height = 100; // default, although this gets overwritten in the initTableau function
     this.viz = null;
-    this.vizActions = [];
     this.pubSheets = null;
+    this.vizActions = [];
+    this.vizActions.push({
+      caption: 'EXAMPLE',
+      name: 'EXAMPLE',
+      actName: 'EXAMPLE',
+      type: 'example',
+      func: 'show',
+      field: '',
+      values: []
+    });
 
     //send functions to listener
     this.listenFunctions = [
       { type: 'activate', func: this.tabithaActivate },
       { type: 'change', func: this.tabithaChange },
       { type: 'select', func: this.tabithaSelect },
-      { type: 'switch', func: this.tabithaMove }
+      { type: 'switch', func: this.tabithaMove },
+      { type: 'show', func: this.tabithaExample }
     ];
 
     this.parameters = {
@@ -67,8 +79,8 @@ class InputTableau extends React.Component {
       this.width = activeSheet.getSize().maxSize.width;
       this.height = activeSheet.getSize().maxSize.height;
     } else {
-      this.width = 800;
-      this.height = 800;
+      this.width = 100;
+      this.height = 100;
     }
 
     // this will set the frame size the maximum allowed by the viz
@@ -79,7 +91,16 @@ class InputTableau extends React.Component {
 
     // get published sheets and save them for tableauContainer
     this.pubSheets = wrkbk.getPublishedSheetsInfo();
-    this.vizActions = [];
+    this.vizActions = []; // clear out vizActions and then push example record
+    this.vizActions.push({
+      caption: 'EXAMPLE',
+      name: 'EXAMPLE',
+      actName: 'EXAMPLE',
+      type: 'example',
+      func: 'show',
+      field: '',
+      values: []
+    });
     for (let v = 0; v < this.pubSheets.length; v++) {
       this.vizActions.push({
         caption: this.pubSheets[v].getName().replace(/[^\w\s]/gi, ''),
@@ -477,6 +498,45 @@ class InputTableau extends React.Component {
     });
   }
 
+  tabithaExample(actNm, nm, typ, fld, words, idxObj) {
+    console.log('in tabitha show', nm, fld);
+    if (words[idxObj] === 'EXAMPLE') {
+      if (this.state.exampleCount === 0) {
+        this.setState({
+          url:
+            'https://public.tableau.com/views/StarWords/StarWords?:embed=y&:display_count=yes',
+          interactive: false,
+          speakText:
+            'Sure, preparing my first example now. Try commands like Tabitha, select Yoda.',
+          description: false,
+          listenUp: false,
+          button: 'not listening',
+          exampleCount: this.state.exampleCount++
+        });
+      } else if (this.state.exampleCount === 1) {
+        this.setState({
+          url:
+            'https://public.tableau.com/views/TableauRosePetals/TableauRose?:embed=y&:display_count=yes',
+          interactive: false,
+          speakText:
+            'Sure, preparing my second example now. Try commands like Tabitha, change amplitude 15.',
+          description: false,
+          listenUp: false,
+          button: 'not listening',
+          exampleCount: this.state.exampleCount++
+        });
+      } else {
+        this.setState({
+          speakText: 'Sorry, I am all out of examples.',
+          description: false,
+          listenUp: false,
+          button: 'not listening',
+          exampleCount: this.state.exampleCount++
+        });
+      }
+    }
+  }
+
   handleInputChange(event) {
     //this.setState({ url: event.target.value });
     this.tempURL = event.target.value;
@@ -512,7 +572,7 @@ class InputTableau extends React.Component {
       // set slight timeout to allow voices to load before we trigger intro
       this.setState({
         speakText:
-          'Hi! I am Tabitha. Enter the URL for your visualization below. Then I will learn all about it.',
+          'Hi! I am Tabitha. Enter the URL for your visualization. Then I will learn all about it.',
         listenUp: false,
         button: 'not listening'
       });
