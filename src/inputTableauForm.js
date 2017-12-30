@@ -87,8 +87,8 @@ class InputTableau extends React.Component {
       this.width = activeSheet.getSize().maxSize.width;
       this.height = activeSheet.getSize().maxSize.height;
     } else {
-      this.width = 100;
-      this.height = 100;
+      this.width = 600;
+      this.height = 600;
     }
 
     // this will set the frame size the maximum allowed by the viz
