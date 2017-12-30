@@ -695,7 +695,7 @@ class InputTableau extends React.Component {
       // set slight timeout to allow voices to load before we trigger intro
       this.setState({
         speakText:
-          'Hi! I am Tabitha. Enter the URL for your visualization. Then I will learn all about it.',
+          'Hi! I am Tabitha. Say, Tabitha, show example, or enter the URL for your visualization.',
         listenUp: false,
         button: 'not listening'
       });
