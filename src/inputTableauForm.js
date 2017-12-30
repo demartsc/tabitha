@@ -603,8 +603,19 @@ class InputTableau extends React.Component {
           button: 'not listening',
           exampleCount: this.state.exampleCount + 1
         });
-      } else if (this.state.exampleCount > 2) {
-        let tmp = this.state.exampleCount - 2;
+      } else if (this.state.exampleCount === 3) {
+        this.setState({
+          url:
+            'https://public.tableau.com/views/PolarClock_1/POLAR?:embed=y&:display_count=yes',
+          interactive: false,
+          speakText:
+            'Sure, preparing my fourth example now. Try commands like Tabitha, refresh.',
+          listenUp: false,
+          button: 'not listening',
+          exampleCount: this.state.exampleCount + 1
+        });
+      } else if (this.state.exampleCount > 3) {
+        let tmp = this.state.exampleCount - 3;
         if (tmp === 1) {
           this.setState({
             speakText:
@@ -729,7 +740,11 @@ class InputTableau extends React.Component {
           id="tableauViz"
           className="tableauContainer"
           ref={c => (this.container = c)}
-          style={{ margin: '0 auto', width: this.width, height: this.height }}
+          style={{
+            margin: '0 auto',
+            width: this.width,
+            height: this.height + 50
+          }}
         />
         <Speak
           text={this.state.speakText}
