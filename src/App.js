@@ -32,8 +32,10 @@ class App extends React.Component {
         <p>
           {' '}
           Created by{' '}
+          <a href="https://twitter.com/demartsc?lang=en">Chris DeMartini</a> ,
+          see{' '}
           <a href="https://twitter.com/demartsc?lang=en">
-            Chris DeMartini
+            detailed write up
           </a>{' '}
         </p>
         <p>

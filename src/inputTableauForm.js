@@ -577,7 +577,6 @@ class InputTableau extends React.Component {
           interactive: false,
           speakText:
             'Sure, preparing my first example now. Try commands like Tabitha, select Yoda.',
-          description: false,
           listenUp: false,
           button: 'not listening',
           exampleCount: this.state.exampleCount + 1
@@ -585,22 +584,31 @@ class InputTableau extends React.Component {
       } else if (this.state.exampleCount === 1) {
         this.setState({
           url:
-            'https://public.tableau.com/views/TableauRosePetals/TableauRose?:embed=y&:display_count=yes',
+            'https://public.tableau.com/views/TomPettyFreeFallin/TomPettyDashboard?:embed=y&:display_count=yes',
           interactive: false,
           speakText:
-            'Sure, preparing my second example now. Try commands like Tabitha, change amplitude 15.',
-          description: false,
+            'Sure, preparing my second example now. Try commands like Tabitha, select electric guitar.',
           listenUp: false,
           button: 'not listening',
           exampleCount: this.state.exampleCount + 1
         });
-      } else if (this.state.exampleCount > 1) {
-        let tmp = this.state.exampleCount - 1;
+      } else if (this.state.exampleCount === 2) {
+        this.setState({
+          url:
+            'https://public.tableau.com/views/TableauRosePetals/TableauRose?:embed=y&:display_count=yes',
+          interactive: false,
+          speakText:
+            'Sure, preparing my third example now. Try commands like Tabitha, change amplitude 15.',
+          listenUp: false,
+          button: 'not listening',
+          exampleCount: this.state.exampleCount + 1
+        });
+      } else if (this.state.exampleCount > 2) {
+        let tmp = this.state.exampleCount - 2;
         if (tmp === 1) {
           this.setState({
             speakText:
               'Sorry, I am all out of examples, for the ' + tmp + 'st time.',
-            description: false,
             listenUp: false,
             button: 'not listening',
             exampleCount: this.state.exampleCount + 1
@@ -609,7 +617,6 @@ class InputTableau extends React.Component {
           this.setState({
             speakText:
               'Sorry, I am all out of examples, for the ' + tmp + 'nd time.',
-            description: false,
             listenUp: false,
             button: 'not listening',
             exampleCount: this.state.exampleCount + 1
@@ -618,7 +625,6 @@ class InputTableau extends React.Component {
           this.setState({
             speakText:
               'Sorry, I am all out of examples, for the ' + tmp + 'rd time.',
-            description: false,
             listenUp: false,
             button: 'not listening',
             exampleCount: this.state.exampleCount + 1
@@ -627,13 +633,19 @@ class InputTableau extends React.Component {
           this.setState({
             speakText:
               'Sorry, I am all out of examples, for the ' + tmp + 'th time.',
-            description: false,
             listenUp: false,
             button: 'not listening',
             exampleCount: this.state.exampleCount + 1
           });
         }
       }
+    } else {
+      this.setState({
+        speakText:
+          'The show command only works for examples, try Tabitha, show example.',
+        listenUp: false,
+        button: 'not listening'
+      });
     }
   }
 
