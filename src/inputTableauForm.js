@@ -34,7 +34,11 @@ class InputTableau extends React.Component {
     this.tabithaChange = this.tabithaChange.bind(this);
     this.tabithaSelect = this.tabithaSelect.bind(this);
     this.tabithaMove = this.tabithaMove.bind(this);
+    this.tabithaRevert = this.tabithaRevert.bind(this);
+    this.tabithaRefresh = this.tabithaRefresh.bind(this);
     this.tabithaExample = this.tabithaExample.bind(this);
+    this.tabithaUndo = this.tabithaUndo.bind(this);
+    this.tabithaRedo = this.tabithaRedo.bind(this);
 
     this.tempURL = null;
     this.width = 100; // default, although this gets overwritten in the initTableau function
@@ -54,11 +58,15 @@ class InputTableau extends React.Component {
 
     //send functions to listener
     this.listenFunctions = [
-      { type: 'activate', func: this.tabithaActivate },
-      { type: 'change', func: this.tabithaChange },
-      { type: 'select', func: this.tabithaSelect },
-      { type: 'switch', func: this.tabithaMove },
-      { type: 'show', func: this.tabithaExample }
+      { type: 'activate', func: this.tabithaActivate, parm: 'y' },
+      { type: 'change', func: this.tabithaChange, parm: 'y' },
+      { type: 'select', func: this.tabithaSelect, parm: 'y' },
+      { type: 'switch', func: this.tabithaMove, parm: 'y' },
+      { type: 'show', func: this.tabithaExample, parm: 'y' },
+      { type: 'reset', func: this.tabithaRevert, parm: 'n' },
+      { type: 'refresh', func: this.tabithaRefresh, parm: 'n' }
+      //      { type: 'undo', func: this.tabithaUndo, parm: 'n' }, // not working for the time being, could be a JS API versioning or sheet vs wrkbk thing
+      //      { type: 'redo', func: this.tabithaRedo, parm: 'n' }
     ];
 
     this.parameters = {
@@ -386,6 +394,15 @@ class InputTableau extends React.Component {
             words,
             idxTabitha + 2 + idxObjAdd
           );
+        } else if (this.listenFunctions[idxFunc].parm.toUpperCase() === 'N') {
+          this.listenFunctions[idxFunc].func(
+            '',
+            '',
+            this.listenFunctions[idxFunc].type,
+            '',
+            words,
+            -1
+          );
         } else {
           this.setState({
             speakText:
@@ -434,6 +451,58 @@ class InputTableau extends React.Component {
     });
     this.setState({
       speakText: 'Switching tabs to ' + nm + ' now',
+      listenUp: false,
+      button: 'not listening'
+    });
+  }
+
+  tabithaRevert(actNm, nm, typ, fld, words, idxObj) {
+    console.log('in tabitha revert', nm);
+    let viz = this.state.viz;
+    viz.revertAllAsync().then(function(t) {
+      console.log('viz reverted to starting state', t);
+    });
+    this.setState({
+      speakText: 'Resetting the viz back to its beginning state.',
+      listenUp: false,
+      button: 'not listening'
+    });
+  }
+
+  tabithaRefresh(actNm, nm, typ, fld, words, idxObj) {
+    console.log('in tabitha refresh', nm);
+    let viz = this.state.viz;
+    viz.refreshDataAsync().then(function(t) {
+      console.log('viz refresh with new data', t);
+    });
+    this.setState({
+      speakText: 'Refreshing the data within the viz, if available.',
+      listenUp: false,
+      button: 'not listening'
+    });
+  }
+
+  tabithaUndo(actNm, nm, typ, fld, words, idxObj) {
+    console.log('in tabitha undo', nm);
+    let viz = this.state.viz;
+    viz.undoAsync().then(function(t) {
+      console.log('viz undo completed', t);
+    });
+    this.setState({
+      speakText: 'Sure, let me undo that.',
+      listenUp: false,
+      button: 'not listening'
+    });
+  }
+
+  tabithaRedo(actNm, nm, typ, fld, words, idxObj) {
+    console.log('in tabitha redo', nm);
+    let viz = this.state.viz;
+    viz.redoAsync().then(function(t) {
+      console.log('viz redo completed', t);
+    });
+    this.setState({
+      speakText: 'Sure, let me redo that.',
       listenUp: false,
       button: 'not listening'
     });

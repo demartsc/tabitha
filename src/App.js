@@ -43,11 +43,21 @@ class App extends React.Component {
           </a>{' '}
           by Jeffrey Shaffer{' '}
         </p>
-        <p>
-          {' '}
-          Need to add the attribution to responsive voice non-commercial license
-          here{' '}
-        </p>
+        <div>
+          <a href="https://responsivevoice.org">
+            ResponsiveVoice-NonCommercial
+          </a>{' '}
+          licensed under{' '}
+          <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/">
+            <img
+              title="ResponsiveVoice Text To Speech"
+              src="https://responsivevoice.org/wp-content/uploads/2014/08/95x15.png"
+              alt="95x15"
+              width="95"
+              height="15"
+            />
+          </a>
+        </div>
       </div>
     );
   }

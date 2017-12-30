@@ -37,7 +37,7 @@ class Dictaphone extends React.Component {
           .replace(/[^\w\s]/gi, '')
           .split(' ');
         //console.log(words);
-        if (words.length > 2) {
+        if (words.length > 1) {
           // only call if we have at least three words
           this.props.onListen[0].func(words); // default to the first function for now...
         }
