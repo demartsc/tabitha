@@ -32,11 +32,12 @@ class App extends React.Component {
         <p>
           {' '}
           Created by{' '}
-          <a href="https://twitter.com/demartsc?lang=en">Chris DeMartini</a> ,
+          <a href="https://twitter.com/demartsc?lang=en">Chris DeMartini</a>,
           see{' '}
           <a href="https://twitter.com/demartsc?lang=en">
             detailed write up
           </a>{' '}
+          and thanks to those that let me use their vizzes!
         </p>
         <p>
           Inspired by{' '}
