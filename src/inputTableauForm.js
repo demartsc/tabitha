@@ -303,10 +303,10 @@ class InputTableau extends React.Component {
     if (this.state.button === 'not listening') {
       this.toggleButton();
     }
-    console.log(
-      'succesfully event listened for end of speech',
-      this.state.listenUp
-    );
+    // console.log(
+    //   'succesfully event listened for end of speech',
+    //   this.state.listenUp
+    // );
     //}, 1000);
   }
 
@@ -446,7 +446,7 @@ class InputTableau extends React.Component {
   }
 
   tabithaMove(actNm, nm, typ, fld, words, idxObj) {
-    console.log('in tabitha move', nm);
+    // console.log('in tabitha move', nm);
     let wrkbk = this.state.viz.getWorkbook();
     wrkbk.activateSheetAsync(actNm).then(function(t) {
       console.log('sheet activated', t);
@@ -459,7 +459,7 @@ class InputTableau extends React.Component {
   }
 
   tabithaRevert(actNm, nm, typ, fld, words, idxObj) {
-    console.log('in tabitha revert', nm);
+    // console.log('in tabitha revert', nm);
     let viz = this.state.viz;
     viz.revertAllAsync().then(function(t) {
       console.log('viz reverted to starting state', t);
@@ -472,7 +472,7 @@ class InputTableau extends React.Component {
   }
 
   tabithaRefresh(actNm, nm, typ, fld, words, idxObj) {
-    console.log('in tabitha refresh', nm);
+    // console.log('in tabitha refresh', nm);
     let viz = this.state.viz;
     viz.refreshDataAsync().then(function(t) {
       console.log('viz refresh with new data', t);
@@ -485,7 +485,7 @@ class InputTableau extends React.Component {
   }
 
   tabithaUndo(actNm, nm, typ, fld, words, idxObj) {
-    console.log('in tabitha undo', nm);
+    // console.log('in tabitha undo', nm);
     let viz = this.state.viz;
     viz.undoAsync().then(function(t) {
       console.log('viz undo completed', t);
@@ -498,7 +498,7 @@ class InputTableau extends React.Component {
   }
 
   tabithaRedo(actNm, nm, typ, fld, words, idxObj) {
-    console.log('in tabitha redo', nm);
+    // console.log('in tabitha redo', nm);
     let viz = this.state.viz;
     viz.redoAsync().then(function(t) {
       console.log('viz redo completed', t);
@@ -511,7 +511,7 @@ class InputTableau extends React.Component {
   }
 
   tabithaChange(actNm, nm, typ, fld, words, idxObj) {
-    console.log('in tabitha change', words, idxObj);
+    // console.log('in tabitha change', words, idxObj);
     let wrkbk = this.state.viz.getWorkbook();
     let sheet = wrkbk.getActiveSheet();
     let sheets = sheet.getWorksheets();
@@ -520,7 +520,7 @@ class InputTableau extends React.Component {
 
     if (typ === 'parameter') {
       //if parameter then call change parameter
-      console.log('changing paramter', nm, words[idxObj + 1]);
+      // console.log('changing paramter', nm, words[idxObj + 1]);
       wrkbk.changeParameterValueAsync(actNm, words[idxObj + 1]).then(
         function(p) {
           console.log('parameter changed', p);
@@ -555,7 +555,7 @@ class InputTableau extends React.Component {
   }
 
   tabithaSelect(actNm, nm, typ, fld, words, idxObj) {
-    console.log('in tabitha select', nm, fld);
+    // console.log('in tabitha select', nm, fld);
     let wrkbk = this.state.viz.getWorkbook();
     let sheets = wrkbk.getActiveSheet().getWorksheets();
     for (let y = 0; y < sheets.length; y++) {
@@ -570,7 +570,7 @@ class InputTableau extends React.Component {
   }
 
   tabithaExample(actNm, nm, typ, fld, words, idxObj) {
-    console.log('in tabitha show', nm, fld);
+    // console.log('in tabitha show', nm, fld);
     if (words[idxObj] === 'EXAMPLE') {
       if (this.state.exampleCount === 0) {
         this.setState({

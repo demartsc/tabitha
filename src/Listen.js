@@ -24,11 +24,11 @@ class Dictaphone extends React.Component {
 
   componentWillUpdate(nextProps) {
     if (this.props.finalTranscript !== nextProps.finalTranscript) {
-      console.log(
-        'finalTranscript updated',
-        nextProps.finalTranscript,
-        nextProps.listenUp
-      );
+      // console.log(
+      //   'finalTranscript updated',
+      //   nextProps.finalTranscript,
+      //   nextProps.listenUp
+      // );
 
       if (nextProps.listenUp) {
         //split the words into array for easier analysis
