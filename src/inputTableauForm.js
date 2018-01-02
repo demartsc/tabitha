@@ -292,7 +292,9 @@ class InputTableau extends React.Component {
     };
 
     //initiate the viz
-    this.viz = new window.tableau.Viz(this.container, vizURL, options);
+    if (vizURL !== '') {
+      this.viz = new window.tableau.Viz(this.container, vizURL, options);
+    }
   }
 
   doneTalking() {
