@@ -10,7 +10,7 @@ class Speak extends React.Component {
   }
 
   talk(text, voice, parameters) {
-    //console.log('speak.js', text, parameters);
+    console.log('speak.js', text, parameters);
     window.speak(text, voice, parameters);
   }
 
