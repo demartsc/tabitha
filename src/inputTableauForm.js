@@ -671,12 +671,14 @@ class InputTableau extends React.Component {
     if (this.state.button === 'not listening') {
       this.setState({
         button: 'listening',
-        listenUp: true
+        listenUp: true,
+        speakText: ''
       });
     } else {
       this.setState({
         button: 'not listening',
-        listenUp: false
+        listenUp: false,
+        speakText: ''
       });
     }
   }
