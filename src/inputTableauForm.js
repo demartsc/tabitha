@@ -11,6 +11,7 @@ class InputTableau extends React.Component {
     this.state = {
       url: this.props.url,
       speakText: '',
+      speakToggle: '.',
       voice: 'UK English Female',
       viz: null,
       vizActions: [],
@@ -265,14 +266,14 @@ class InputTableau extends React.Component {
                   });
                 }
               }
+              //use lodash to unique the array object list created (in case there are filters on multiple tabs, or repeated marks)
+              this.vizActions = _.uniqWith(this.vizActions, _.isEqual);
+              this.setState({
+                vizActions: this.vizActions
+              });
             });
         }
       }
-      //use lodash to unique the array object list created (in case there are filters on multiple tabs, or repeated marks)
-      this.vizActions = _.uniqWith(this.vizActions, _.isEqual);
-      this.setState({
-        vizActions: this.vizActions
-      });
     });
   }
 
@@ -299,24 +300,25 @@ class InputTableau extends React.Component {
 
   doneTalking() {
     // when we stop talking ... we start listening ... give it a cushion of a second
-    //setTimeout(() => {
-    if (this.state.button === 'not listening') {
-      this.toggleButton();
-    }
-    // console.log(
-    //   'succesfully event listened for end of speech',
-    //   this.state.listenUp
-    // );
-    //}, 1000);
+    setTimeout(() => {
+      if (this.state.button === 'not listening') {
+        this.toggleButton();
+      }
+      // console.log(
+      //   'succesfully event listened for end of speech',
+      //   this.state
+      // );
+    }, 2000);
   }
 
   tabithaActivate(words) {
     // we only want to start doing something when the phrase tabitha is said
-    console.log(words);
+    console.log(words, this.state.listenUp);
     let idxTabitha = _.indexOf(words, 'TABITHA');
     let idxFunc = -1; // probably a better way to do this
     let idxObj = -1; // probably a better way to do this
     let idxObjAdd = 0;
+    let speakToggle = this.state.speakToggle === '.' ? '' : '.';
     if (idxTabitha >= 0) {
       // tabitha was said
       for (let k = 0; k < this.listenFunctions.length; k++) {
@@ -430,88 +432,104 @@ class InputTableau extends React.Component {
         this.setState({
           speakText:
             "I don't appear to have a command that matches that, try " +
-            funcNames,
+            funcNames +
+            speakToggle,
           listenUp: false,
-          button: 'not listening'
+          button: 'not listening',
+          speakToggle: speakToggle
         });
       }
     } else {
       this.setState({
         speakText:
-          'If you want to get my attention make sure to start with my name... Tabitha',
+          'If you want to get my attention make sure to start with my name... Tabitha' +
+          speakToggle,
         listenUp: false,
-        button: 'not listening'
+        button: 'not listening',
+        speakToggle: speakToggle
       });
     }
   }
 
   tabithaMove(actNm, nm, typ, fld, words, idxObj) {
     // console.log('in tabitha move', nm);
+    let speakToggle = this.state.speakToggle === '.' ? '' : '.';
     let wrkbk = this.state.viz.getWorkbook();
     wrkbk.activateSheetAsync(actNm).then(function(t) {
       console.log('sheet activated', t);
     });
     this.setState({
-      speakText: 'Switching tabs to ' + nm + ' now',
+      speakText: 'Switching tabs to ' + nm + ' now' + speakToggle,
       listenUp: false,
-      button: 'not listening'
+      button: 'not listening',
+      speakToggle: speakToggle
     });
   }
 
   tabithaRevert(actNm, nm, typ, fld, words, idxObj) {
     // console.log('in tabitha revert', nm);
+    let speakToggle = this.state.speakToggle === '.' ? '' : '.';
     let viz = this.state.viz;
     viz.revertAllAsync().then(function(t) {
       console.log('viz reverted to starting state', t);
     });
     this.setState({
-      speakText: 'Resetting the viz back to its beginning state.',
+      speakText: 'Resetting the viz back to its beginning state' + speakToggle,
       listenUp: false,
-      button: 'not listening'
+      button: 'not listening',
+      speakToggle: speakToggle
     });
   }
 
   tabithaRefresh(actNm, nm, typ, fld, words, idxObj) {
     // console.log('in tabitha refresh', nm);
+    let speakToggle = this.state.speakToggle === '.' ? '' : '.';
     let viz = this.state.viz;
     viz.refreshDataAsync().then(function(t) {
       console.log('viz refresh with new data', t);
     });
     this.setState({
-      speakText: 'Refreshing the data within the viz, if available.',
+      speakText:
+        'Refreshing the data within the viz, if available' + speakToggle,
       listenUp: false,
-      button: 'not listening'
+      button: 'not listening',
+      speakToggle: speakToggle
     });
   }
 
   tabithaUndo(actNm, nm, typ, fld, words, idxObj) {
     // console.log('in tabitha undo', nm);
+    let speakToggle = this.state.speakToggle === '.' ? '' : '.';
     let viz = this.state.viz;
     viz.undoAsync().then(function(t) {
       console.log('viz undo completed', t);
     });
     this.setState({
-      speakText: 'Sure, let me undo that.',
+      speakText: 'Sure, let me undo that' + speakToggle,
       listenUp: false,
-      button: 'not listening'
+      button: 'not listening',
+      speakToggle: speakToggle
     });
   }
 
   tabithaRedo(actNm, nm, typ, fld, words, idxObj) {
     // console.log('in tabitha redo', nm);
+    let speakToggle = this.state.speakToggle === '.' ? '' : '.';
     let viz = this.state.viz;
     viz.redoAsync().then(function(t) {
       console.log('viz redo completed', t);
     });
     this.setState({
-      speakText: 'Sure, let me redo that.',
+      speakText: 'Sure, let me redo that' + speakToggle,
       listenUp: false,
-      button: 'not listening'
+      button: 'not listening',
+      speakToggle: speakToggle
     });
   }
 
   tabithaChange(actNm, nm, typ, fld, words, idxObj) {
     // console.log('in tabitha change', words, idxObj);
+    let speakToggle = this.state.speakToggle === '.' ? '' : '.';
     let wrkbk = this.state.viz.getWorkbook();
     let sheet = wrkbk.getActiveSheet();
     let sheets = sheet.getWorksheets();
@@ -530,9 +548,11 @@ class InputTableau extends React.Component {
         }
       );
       this.setState({
-        speakText: 'Changing parameter ' + nm + ' to ' + words[idxObj + 1],
+        speakText:
+          'Changing parameter ' + nm + ' to ' + words[idxObj + 1] + speakToggle,
         listenUp: false,
-        button: 'not listening'
+        button: 'not listening',
+        speakToggle: speakToggle
       });
     } else if (typ === 'filter') {
       //if filter then call filter on each sheet
@@ -546,9 +566,11 @@ class InputTableau extends React.Component {
           }
         );
         this.setState({
-          speakText: 'Changing filter ' + nm + ' to ' + words[idxObj + 1],
+          speakText:
+            'Changing filter ' + nm + ' to ' + words[idxObj + 1] + speakToggle,
           listenUp: false,
-          button: 'not listening'
+          button: 'not listening',
+          speakToggle: speakToggle
         });
       }
     }
@@ -556,6 +578,7 @@ class InputTableau extends React.Component {
 
   tabithaSelect(actNm, nm, typ, fld, words, idxObj) {
     // console.log('in tabitha select', nm, fld);
+    let speakToggle = this.state.speakToggle === '.' ? '' : '.';
     let wrkbk = this.state.viz.getWorkbook();
     let sheets = wrkbk.getActiveSheet().getWorksheets();
     for (let y = 0; y < sheets.length; y++) {
@@ -563,14 +586,16 @@ class InputTableau extends React.Component {
       sheets[y].selectMarksAsync(fld, actNm, 'REPLACE');
     }
     this.setState({
-      speakText: 'Selecting ' + fld + ' ' + nm + ' now.',
+      speakText: 'Selecting ' + fld + ' ' + nm + ' now' + speakToggle,
       listenUp: false,
-      button: 'not listening'
+      button: 'not listening',
+      speakToggle: speakToggle
     });
   }
 
   tabithaExample(actNm, nm, typ, fld, words, idxObj) {
     // console.log('in tabitha show', nm, fld);
+    let speakToggle = this.state.speakToggle === '.' ? '' : '.';
     if (words[idxObj] === 'EXAMPLE') {
       if (this.state.exampleCount === 0) {
         this.setState({
@@ -586,7 +611,8 @@ class InputTableau extends React.Component {
       } else if (this.state.exampleCount === 1) {
         this.setState({
           url:
-            'https://public.tableau.com/views/TomPettyFreeFallin/TomPettyDashboard?:embed=y&:display_count=yes',
+            'https://public.tableau.com/views/TomPettyFreeFallin_0/TomPettyDashboard?:embed=y&:display_count=yes',
+          //'https://public.tableau.com/views/TomPettyFreeFallin/TomPettyDashboard?:embed=y&:display_count=yes',
           interactive: false,
           speakText:
             'Sure, preparing my second example now. Try commands like Tabitha, select electric guitar.',
@@ -655,9 +681,11 @@ class InputTableau extends React.Component {
     } else {
       this.setState({
         speakText:
-          'The show command only works for examples, try Tabitha, show example.',
+          'The show command only works for examples, try Tabitha, show example' +
+          speakToggle,
         listenUp: false,
-        button: 'not listening'
+        button: 'not listening',
+        speakToggle: speakToggle
       });
     }
   }
@@ -668,29 +696,30 @@ class InputTableau extends React.Component {
   }
 
   toggleButton() {
+    console.log('toggling button', this.state);
     if (this.state.button === 'not listening') {
       this.setState({
         button: 'listening',
-        listenUp: true,
-        speakText: ''
+        listenUp: true
       });
     } else {
       this.setState({
         button: 'not listening',
-        listenUp: false,
-        speakText: ''
+        listenUp: false
       });
     }
   }
 
   handleButtonClick(event) {
+    let speakToggle = this.state.speakToggle === '.' ? '' : '.';
     this.setState({
       url: this.tempURL,
       interactive: false,
-      speakText: 'Thanks! I am updating your workbook now.',
+      speakText: 'Thanks! I am updating your workbook now' + speakToggle,
       description: false,
       listenUp: false,
-      button: 'not listening'
+      button: 'not listening',
+      speakToggle: speakToggle
     });
   }
 

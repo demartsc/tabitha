@@ -23,7 +23,10 @@ class Dictaphone extends React.Component {
   // }
 
   componentWillUpdate(nextProps) {
-    if (this.props.finalTranscript !== nextProps.finalTranscript) {
+    if (
+      this.props.finalTranscript !== nextProps.finalTranscript &&
+      nextProps.finalTranscript !== ''
+    ) {
       // console.log(
       //   'finalTranscript updated',
       //   nextProps.finalTranscript,
@@ -37,7 +40,7 @@ class Dictaphone extends React.Component {
           .replace(/[^\w\s]/gi, '')
           .split(' ');
         //console.log(words);
-        if (words.length > 1) {
+        if (words.length > 0) {
           // only call if we have at least three words
           this.props.onListen[0].func(words); // default to the first function for now...
         }
