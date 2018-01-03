@@ -34,7 +34,7 @@ class App extends React.Component {
           Created by{' '}
           <a href="https://twitter.com/demartsc?lang=en">Chris DeMartini</a>,
           see{' '}
-          <a href="https://twitter.com/demartsc?lang=en">
+          <a href="http://www.datablick.com/blog/2017/12/29/talking-to-tableau-via-react">
             detailed write up
           </a>{' '}
           and thanks to those that let me use their vizzes!
