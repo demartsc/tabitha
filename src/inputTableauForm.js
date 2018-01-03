@@ -607,7 +607,7 @@ class InputTableau extends React.Component {
       if (this.state.exampleCount === 0) {
         this.setState({
           url:
-            'https://public.tableau.com/views/StarWords/StarWords?:embed=y&:display_count=yes',
+            'https://public.tableau.com/views/Starwars/StarWords?:embed=y&:display_count=yes',
           interactive: false,
           speakText:
             'Sure, preparing my first example now. Try commands like Tabitha, select Yoda.',
@@ -768,7 +768,7 @@ class InputTableau extends React.Component {
         <button onClick={this.toggleButton}>{this.state.button}</button>
         <input
           onChange={this.handleInputChange}
-          placeholder="Input Tableau Public URL"
+          placeholder="Input Tableau Public URL (use share link)"
           name="vizInput"
           type="text"
           style={{ width: '70%' }}
