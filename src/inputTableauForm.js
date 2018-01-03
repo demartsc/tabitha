@@ -268,19 +268,26 @@ class InputTableau extends React.Component {
               }
               //use lodash to unique the array object list created (in case there are filters on multiple tabs, or repeated marks)
               this.vizActions = _.uniqWith(this.vizActions, _.isEqual);
+              // console.log(this.vizActions);
               this.setState({
                 vizActions: this.vizActions
               });
             });
         }
       }
+      //use lodash to unique the array object list created (in case there are filters on multiple tabs, or repeated marks)
+      this.vizActions = _.uniqWith(this.vizActions, _.isEqual);
+      // console.log(this.vizActions);
+      this.setState({
+        vizActions: this.vizActions
+      });
     });
   }
 
   initTableau() {
     const vizURL = this.state.url;
     const options = {
-      hideTabs: true,
+      //hideTabs: true,
       width: this.width,
       height: this.height,
       onFirstInteractive: () => {
@@ -623,10 +630,10 @@ class InputTableau extends React.Component {
       } else if (this.state.exampleCount === 2) {
         this.setState({
           url:
-            'https://public.tableau.com/views/TableauRosePetals/TableauRose?:embed=y&:display_count=yes',
+            'https://public.tableau.com/views/PolarClockExample/POLAR?:embed=y&:display_count=yes',
           interactive: false,
           speakText:
-            'Sure, preparing my third example now. Try commands like Tabitha, change amplitude 15.',
+            'Sure, preparing my third example now. Try commands like Tabitha, refresh.',
           listenUp: false,
           button: 'not listening',
           exampleCount: this.state.exampleCount + 1
@@ -634,10 +641,10 @@ class InputTableau extends React.Component {
       } else if (this.state.exampleCount === 3) {
         this.setState({
           url:
-            'https://public.tableau.com/views/PolarClock_1/POLAR?:embed=y&:display_count=yes',
+            'https://public.tableau.com/views/TableauRosePetals/TableauRose?:embed=y&:display_count=yes',
           interactive: false,
           speakText:
-            'Sure, preparing my fourth example now. Try commands like Tabitha, refresh.',
+            'Sure, preparing my fourth example now. Try commands like Tabitha, change amplitude 15.',
           listenUp: false,
           button: 'not listening',
           exampleCount: this.state.exampleCount + 1
@@ -696,7 +703,7 @@ class InputTableau extends React.Component {
   }
 
   toggleButton() {
-    console.log('toggling button', this.state);
+    //console.log('toggling button', this.state);
     if (this.state.button === 'not listening') {
       this.setState({
         button: 'listening',
